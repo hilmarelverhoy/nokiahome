@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Select Destination";
+    var fromCode = ViewBag.FromCode as string;
+    var fromName = ViewBag.FromName as string;
+    var fromCoordinates = ViewBag.FromCoordinates as string;
+    var hasValidFromId = !string.IsNullOrEmpty(fromCode) && fromCode.Contains(":");
+}
+
+<div class="container mt-4">
+    <div class="alert alert-info">
+        <strong>From:</strong> @fromName
+    </div>
+    
+    <h2>Where are you traveling to?</h2>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <h4>Quick Select</h4>
+            <div class="d-grid gap-2 d-md-block">
+                @if (hasValidFromId)
+                {
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromCode = fromCode, toName = "Fredensborgveien 6A", toCoordinates = "10.746254205613143,59.91777364244695" })" class="btn btn-success btn-lg me-2 mb-2">Hjem</a>
+                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = "NSR:StopPlace:337" })" class="btn btn-success btn-lg me-2 mb-2">Oslo S</a>
+                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = "NSR:StopPlace:418" })" class="btn btn-success btn-lg me-2 mb-2">Trondheim S</a>
+                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = "NSR:StopPlace:259" })" class="btn btn-success btn-lg me-2 mb-2">Bergen stasjon</a>
+                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = "NSR:StopPlace:6221" })" class="btn btn-success btn-lg me-2 mb-2">Stavanger stasjon</a>
+                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = "NSR:StopPlace:4287" })" class="btn btn-success btn-lg me-2 mb-2">Kristiansand stasjon</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toName = "Fredensborgveien 6A", toCoordinates = "10.746254205613143,59.91777364244695" })" class="btn btn-success btn-lg me-2 mb-2">Hjem</a>
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toCode = "NSR:StopPlace:337" })" class="btn btn-success btn-lg me-2 mb-2">Oslo S</a>
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toCode = "NSR:StopPlace:418" })" class="btn btn-success btn-lg me-2 mb-2">Trondheim S</a>
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toCode = "NSR:StopPlace:259" })" class="btn btn-success btn-lg me-2 mb-2">Bergen stasjon</a>
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toCode = "NSR:StopPlace:6221" })" class="btn btn-success btn-lg me-2 mb-2">Stavanger stasjon</a>
+                    <a href="@Url.Action("GetTripWithCoordinates", new { fromName = fromName, fromCoordinates = fromCoordinates, toCode = "NSR:StopPlace:4287" })" class="btn btn-success btn-lg me-2 mb-2">Kristiansand stasjon</a>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4>Or search for a location</h4>
+            <form asp-action="SearchTo" method="post" class="d-flex">
+                <input type="hidden" name="fromCode" value="@fromCode">
+                <input type="hidden" name="fromName" value="@fromName">
+                <input type="hidden" name="fromCoordinates" value="@fromCoordinates">
+                <input type="text" name="searchText" class="form-control me-2" placeholder="Enter destination name..." required>
+                <button type="submit" class="btn btn-outline-success">Search</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="@Url.Action("From")" class="btn btn-secondary">← Back to From</a>
+        </div>
+    </div>
+</div>

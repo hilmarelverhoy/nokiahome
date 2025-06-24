@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Select Departure Location";
+}
+
+<div class="container mt-4">
+    <h2>Where are you traveling from?</h2>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <h4>Quick Select</h4>
+            <div class="d-grid gap-2 d-md-block">
+                <a href="@Url.Action("To", new { fromName = "Fredensborgveien 6A", fromCoordinates = "10.746254205613143,59.91777364244695" })" class="btn btn-primary btn-lg me-2 mb-2">Hjem</a>
+                <a href="@Url.Action("To", new { fromCode = "NSR:StopPlace:337", fromName = "Oslo S" })" class="btn btn-primary btn-lg me-2 mb-2">Oslo S</a>
+                <a href="@Url.Action("To", new { fromCode = "NSR:StopPlace:418", fromName = "Trondheim S" })" class="btn btn-primary btn-lg me-2 mb-2">Trondheim S</a>
+                <a href="@Url.Action("To", new { fromCode = "NSR:StopPlace:259", fromName = "Bergen stasjon" })" class="btn btn-primary btn-lg me-2 mb-2">Bergen stasjon</a>
+                <a href="@Url.Action("To", new { fromCode = "NSR:StopPlace:6221", fromName = "Stavanger stasjon" })" class="btn btn-primary btn-lg me-2 mb-2">Stavanger stasjon</a>
+                <a href="@Url.Action("To", new { fromCode = "NSR:StopPlace:4287", fromName = "Kristiansand stasjon" })" class="btn btn-primary btn-lg me-2 mb-2">Kristiansand stasjon</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4>Or search for a location</h4>
+            <form asp-action="SearchFrom" method="post" class="d-flex">
+                <input type="text" name="searchText" class="form-control me-2" placeholder="Enter location name..." required>
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+    </div>
+</div>

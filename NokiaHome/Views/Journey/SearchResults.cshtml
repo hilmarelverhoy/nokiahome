@@ -1,0 +1,118 @@
+@model NokiaHome.Models.Geocoding.GeocodingResponse
+@{
+    ViewData["Title"] = "Search Results";
+    var searchType = ViewBag.SearchType as string;
+    var fromCode = ViewBag.FromCode as string;
+    var fromName = ViewBag.FromName as string;
+    var isFromSearch = searchType == "from";
+}
+
+<div class="container mt-4">
+    @if (!isFromSearch)
+    {
+        <div class="alert alert-info">
+            <strong>From:</strong> @fromName
+        </div>
+    }
+    
+    <h2>Search Results</h2>
+    
+    @if (Model?.Features?.Any() == true)
+    {
+        <div class="row">
+            @foreach (var feature in Model.Features.Where(f => !string.IsNullOrEmpty(f.Properties?.Id)))
+                {
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@feature.Properties?.Name</h5>
+                            <p class="card-text">
+                                <small class="text-muted">@feature.Properties?.Label</small>
+                            </p>
+                            @if (feature.Properties?.Category?.Any() == true)
+                            {
+                                <div class="mb-2">
+                                    @foreach (var category in feature.Properties.Category)
+                                    {
+                                        <span class="badge bg-secondary me-1">@category</span>
+                                    }
+                                </div>
+                            }
+                            @{
+                                var hasValidId = !string.IsNullOrEmpty(feature.Properties?.Id) && feature.Properties.Id.Contains(":");
+                                var coordinates = feature.Geometry?.Coordinates != null && feature.Geometry.Coordinates.Length >= 2 ? $"{feature.Geometry.Coordinates[0]},{feature.Geometry.Coordinates[1]}" : null;
+                            }
+                            
+                            @if (isFromSearch)
+                            {
+                                @if (hasValidId)
+                                {
+                                    <a href="@Url.Action("To", new { fromCode = feature.Properties?.Id, fromName = feature.Properties?.Name })" 
+                                       class="btn btn-primary">Select as From Location</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("To", new { fromName = feature.Properties?.Name, fromCoordinates = coordinates })" 
+                                       class="btn btn-primary">Select as From Location</a>
+                                }
+                                <div class="small text-muted mt-1">
+                                    ID: @feature.Properties?.Id
+                                    @if (!hasValidId && coordinates != null)
+                                    {
+                                        <br />
+                                        <span>Coordinates: @(coordinates)</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                @if (hasValidId)
+                                {
+                                    <a href="@Url.Action("GetTrip", new { fromCode = fromCode, toCode = feature.Properties?.Id })" 
+                                       class="btn btn-success">Select as Destination</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("GetTripWithCoordinates", new { 
+                                        fromCode = fromCode, 
+                                        fromName = fromName,
+                                        toName = feature.Properties?.Name, 
+                                        toCoordinates = coordinates 
+                                    })" class="btn btn-success">Select as Destination</a>
+                                }
+                                <div class="small text-muted mt-1">
+                                    ID: @feature.Properties?.Id
+                                    @if (!hasValidId && coordinates != null)
+                                    {
+                                        <br />
+                                        <span>Coordinates: @(coordinates)</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4>No results found</h4>
+            <p>Try a different search term or check your spelling.</p>
+        </div>
+    }
+    
+    <div class="row mt-3">
+        <div class="col-12">
+            @if (isFromSearch)
+            {
+                <a href="@Url.Action("From")" class="btn btn-secondary">← Back to From</a>
+            }
+            else
+            {
+                <a href="@Url.Action("To", new { fromCode = fromCode, fromName = fromName })" class="btn btn-secondary">← Back to To</a>
+            }
+        </div>
+    </div>
+</div>

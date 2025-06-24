@@ -1,0 +1,133 @@
+@model NokiaHome.Models.Trip.TripResponse
+@{
+    ViewData["Title"] = "Trip Results";
+    var errorMessage = ViewBag.ErrorMessage as string;
+    var rawResponse = ViewBag.RawResponse as string;
+}
+
+<div class="container mt-4">
+    <h2>Trip Results</h2>
+    
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">
+            <h4>@errorMessage</h4>
+            @if (ViewBag.FromCode != null && ViewBag.ToCode != null)
+            {
+                <p><strong>From:</strong> @ViewBag.FromCode</p>
+                <p><strong>To:</strong> @ViewBag.ToCode</p>
+            }
+            @if (!string.IsNullOrEmpty(rawResponse))
+            {
+                <details>
+                    <summary>Raw Response</summary>
+                    <pre class="mt-2" style="max-height: 400px; overflow-y: auto;">@rawResponse</pre>
+                </details>
+            }
+        </div>
+    }
+    else if (Model?.Data?.Trip?.TripPatterns?.Any() == true)
+    {
+        <div class="alert alert-success mb-4">
+            <strong>@Model.Data.Trip.TripPatterns.Count</strong> journey options found
+        </div>
+        
+        @foreach (var (tripPattern, index) in Model.Data.Trip.TripPatterns.Select((tp, i) => (tp, i)))
+        {
+            <a href="@Url.Action("TripDetailsWithCoordinates", new { fromCode = ViewBag.FromCode, fromName = ViewBag.FromName, toCode = ViewBag.ToCode, toName = ViewBag.ToName, tripIndex = index })" class="text-decoration-none text-dark">
+                <div class="border mb-3" style="cursor: pointer;">
+                    <div class="bg-light p-2">
+                        <strong>Trip @(index + 1) - @tripPattern.FormattedDuration</strong>
+                        <span class="float-end text-muted">Click for details →</span>
+                    @if (tripPattern.EndTime.HasValue)
+                    {
+                        <span> - Arrives @tripPattern.EndTime.Value.ToString("HH:mm")</span>
+                    }
+                    @if (tripPattern.WalkTime > 0)
+                    {
+                        <span> - Walk: @tripPattern.FormattedWalkTime</span>
+                    }
+                    @if (tripPattern.WaitingTime > 0)
+                    {
+                        <span> - Wait: @tripPattern.FormattedWaitingTime</span>
+                    }
+                </div>
+                <div class="p-2">
+                    @if (tripPattern.Legs?.Any() == true)
+                    {
+                        @foreach (var leg in tripPattern.Legs)
+                        {
+                            <div class="mb-3 p-2 border">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <strong>@leg.FormattedStartTime - @leg.FormattedEndTime</strong>
+                                        <br>@leg.FormattedDuration
+                                    </div>
+                                    <div class="col-2">
+                                        @if (leg.Line != null)
+                                        {
+                                            var bgColor = leg.Line.Presentation?.HexColour ?? "007bff";
+                                            var textColor = leg.Line.Presentation?.HexTextColour ?? "ffffff";
+                                            
+                                            <span style="background-color: #@bgColor; color: #@textColor; padding: 4px 8px; border-radius: 4px;">
+                                                @leg.Line.PublicCode
+                                            </span>
+                                            @if (!string.IsNullOrEmpty(leg.Line.TransportMode))
+                                            {
+                                                <br><small>@leg.Line.TransportMode</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 4px;">@leg.Mode</span>
+                                        }
+                                    </div>
+                                    <div class="col-5">
+                                        <strong>@(leg.FromPlace?.Name ?? "Start") → @(leg.ToPlace?.Name ?? "End")</strong>
+                                        @if (leg.Line != null)
+                                        {
+                                            @if (!string.IsNullOrEmpty(leg.Line.Name))
+                                            {
+                                                <br><small>@leg.Line.Name</small>
+                                            }
+                                            @if (!string.IsNullOrEmpty(leg.Line.Description))
+                                            {
+                                                <br><small>@leg.Line.Description</small>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-2">
+                                        @leg.FormattedDistance
+                                    </div>
+                                </div>
+                                @if (leg.Line?.Notices?.Any() == true)
+                                {
+                                    @foreach (var notice in leg.Line.Notices)
+                                    {
+                                        <div class="mt-2 p-2 bg-warning">
+                                            <strong>Notice:</strong> @notice.Text
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            </a>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h4>No trips found</h4>
+            <p>No journey options were found for your selected route. Please try different locations or times.</p>
+        </div>
+    }
+    
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="@Url.Action("From")" class="btn btn-primary">← Plan Another Journey</a>
+        </div>
+    </div>
+</div>
