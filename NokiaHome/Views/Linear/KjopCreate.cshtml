@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Kjøp — ny sak";
+    var kjopLabelId = ViewBag.KjopLabelId as string;
+    var kjopLabelFound = ViewBag.KjopLabelFound is true;
+    var stateId = ViewBag.StateId as string;
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to issues</a>
+</div>
+
+<h4 class="mb-1">Kjøp</h4>
+<p class="text-muted mb-4">
+    <span class="badge bg-info">Medium</span>
+    @if (kjopLabelFound)
+    {
+        <span class="ms-2 badge bg-secondary">kjøp</span>
+    }
+    else
+    {
+        <span class="ms-2 text-warning small">⚠ "kjøp" label not found — issue will be created without it</span>
+    }
+</p>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<form asp-action="KjopCreate" method="post" style="max-width: 600px;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="stateId" value="@stateId" />
+    <input type="hidden" name="kjopLabelId" value="@kjopLabelId" />
+
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" id="title" name="title" class="form-control form-control-lg"
+               autofocus placeholder="What to buy?" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create issue</button>
+</form>

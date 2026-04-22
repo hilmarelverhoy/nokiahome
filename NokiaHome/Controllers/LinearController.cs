@@ -326,5 +326,68 @@ namespace NokiaHome.Controllers
                 return View(model);
             }
         }
+
+        // GET /Linear/KjopCreate — minimal title form, kjøp label + medium priority pre-applied
+        public async Task<IActionResult> KjopCreate()
+        {
+            try
+            {
+                var statesTask = _linearService.GetStatesAsync();
+                var labelsTask = _linearService.GetLabelsAsync();
+                await Task.WhenAll(statesTask, labelsTask);
+
+                var todoState = statesTask.Result.FirstOrDefault(s =>
+                    s.Name.Equals("Todo", StringComparison.OrdinalIgnoreCase))
+                    ?? statesTask.Result.FirstOrDefault(s => s.Type == "unstarted");
+
+                var kjopLabel = labelsTask.Result.FirstOrDefault(l =>
+                    l.Name.Equals("kjøp", StringComparison.OrdinalIgnoreCase));
+
+                ViewBag.KjopLabelId = kjopLabel?.Id;
+                ViewBag.KjopLabelFound = kjopLabel != null;
+                ViewBag.StateId = todoState?.Id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load data for kjøp create");
+                ViewBag.ErrorMessage = $"Could not load form data: {ex.Message}";
+            }
+
+            return View();
+        }
+
+        // POST /Linear/KjopCreate
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> KjopCreate(string title, string? stateId, string? kjopLabelId)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                ViewBag.ErrorMessage = "Title is required.";
+                return View();
+            }
+
+            try
+            {
+                var labelIds = string.IsNullOrEmpty(kjopLabelId)
+                    ? null
+                    : new List<string> { kjopLabelId };
+
+                var issue = await _linearService.CreateIssueAsync(
+                    title,
+                    description: null,
+                    priority: 3, // Medium
+                    stateId,
+                    labelIds: labelIds);
+
+                return RedirectToAction(nameof(Detail), new { id = issue.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create kjøp issue");
+                ViewBag.ErrorMessage = $"Could not create issue: {ex.Message}";
+                return View();
+            }
+        }
     }
 }

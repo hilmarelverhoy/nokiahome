@@ -18,7 +18,10 @@
             <span>Issues</span>
         }
     </h2>
-    <a asp-action="QuickCreate" class="btn btn-sm btn-dark">+ New issue</a>
+    <div class="d-flex gap-2">
+        <a asp-action="KjopCreate" class="btn btn-sm btn-outline-secondary">+ Kjøp</a>
+        <a asp-action="QuickCreate" class="btn btn-sm btn-dark">+ New issue</a>
+    </div>
 </div>
 
 @if (TempData["ErrorMessage"] != null)
