@@ -1,0 +1,101 @@
+@model NokiaHome.Models.Linear.LinearDebugViewModel
+@{
+    ViewData["Title"] = "Linear Debug";
+}
+
+<h2>Linear API Debug</h2>
+<p class="text-muted">Step-by-step connectivity check. Fix each step before moving to the next.</p>
+
+<hr />
+
+<h5>Step 1 — Authentication (<code>viewer</code> query)</h5>
+@if (Model.AuthError != null)
+{
+    <div class="alert alert-danger">
+        <strong>Failed:</strong> @Model.AuthError
+        <br /><small>Check that <code>Linear__ApiKey</code> is set correctly in your environment.</small>
+    </div>
+}
+else if (Model.AuthOk && Model.Viewer != null)
+{
+    <div class="alert alert-success">
+        <strong>OK</strong> — authenticated as <strong>@Model.Viewer.Name</strong> (@Model.Viewer.Email)
+        <br /><small>Viewer ID: <code>@Model.Viewer.Id</code></small>
+    </div>
+}
+
+@if (Model.AuthOk)
+{
+    <hr />
+    <h5>Step 2 — Teams</h5>
+    @if (Model.TeamsError != null)
+    {
+        <div class="alert alert-danger"><strong>Failed:</strong> @Model.TeamsError</div>
+    }
+    else if (Model.Teams != null && Model.Teams.Any())
+    {
+        <div class="alert alert-success"><strong>OK</strong> — found @Model.Teams.Count team(s)</div>
+        <table class="table table-sm table-bordered" style="max-width:600px">
+            <thead><tr><th>Key</th><th>Name</th><th>ID</th></tr></thead>
+            <tbody>
+                @foreach (var team in Model.Teams)
+                {
+                    <tr>
+                        <td><strong>@team.Key</strong></td>
+                        <td>@team.Name</td>
+                        <td><code>@team.Id</code></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">No teams returned.</div>
+    }
+
+    <hr />
+    <h5>Step 3 — Raw issues (no team filter)</h5>
+    <p class="text-muted small">
+        Configured <code>Linear__TeamId</code>:
+        @if (string.IsNullOrEmpty(Model.ConfiguredTeamId))
+        {
+            <span class="text-danger"><strong>(not set — this is likely the problem)</strong></span>
+        }
+        else
+        {
+            <code>@Model.ConfiguredTeamId</code>
+        }
+    </p>
+    @if (Model.RawIssuesError != null)
+    {
+        <div class="alert alert-danger"><strong>Failed:</strong> @Model.RawIssuesError</div>
+    }
+    else if (Model.RawIssues != null && Model.RawIssues.Any())
+    {
+        <div class="alert alert-success"><strong>OK</strong> — fetched @Model.RawIssues.Count issue(s) without a team filter</div>
+        <table class="table table-sm table-bordered">
+            <thead><tr><th>ID</th><th>Title</th><th>Team Key</th><th>Team ID</th><th>State</th></tr></thead>
+            <tbody>
+                @foreach (var issue in Model.RawIssues)
+                {
+                    <tr>
+                        <td><code>@issue.Identifier</code></td>
+                        <td>@issue.Title</td>
+                        <td><strong>@issue.Team?.Key</strong></td>
+                        <td><code>@issue.Team?.Id</code></td>
+                        <td>@issue.State?.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <p class="text-muted small">
+            Copy the <strong>Team ID</strong> above and set it as <code>Linear__TeamId</code>.
+            Then <a href="@Url.Action("Index")">go back to the issues list</a>.
+        </p>
+    }
+    else if (Model.RawIssues != null)
+    {
+        <div class="alert alert-warning">Query succeeded but returned 0 issues. The API key may not have access to any issues.</div>
+    }
+}

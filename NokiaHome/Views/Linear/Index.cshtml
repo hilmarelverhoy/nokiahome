@@ -1,0 +1,165 @@
+@model NokiaHome.Models.Linear.LinearIssueListResult
+@{
+    ViewData["Title"] = "Issues";
+    var states = ViewBag.States as List<NokiaHome.Models.Linear.LinearWorkflowState> ?? new();
+    var customViews = ViewBag.CustomViews as List<NokiaHome.Models.Linear.LinearCustomView> ?? new();
+    var issueViews = customViews.Where(v => v.ModelName == "Issue").ToList();
+    var inView = !string.IsNullOrEmpty(Model.ActiveViewId);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">
+        @if (inView)
+        {
+            <span class="text-muted fw-normal fs-5 me-2">View:</span>@Model.ActiveViewName
+        }
+        else
+        {
+            <span>Issues</span>
+        }
+    </h2>
+    <a asp-action="QuickCreate" class="btn btn-sm btn-dark">+ New issue</a>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+@* Custom views *@
+@if (issueViews.Any())
+{
+    <div class="mb-4">
+        <div class="text-muted small fw-medium mb-2" style="letter-spacing:.04em">VIEWS</div>
+        <div class="d-flex flex-wrap gap-2">
+            @* "All issues" pill to reset back to default list *@
+            <a asp-action="Index"
+               class="d-flex align-items-center gap-2 text-decoration-none px-3 py-2 rounded border @(!inView ? "bg-dark text-white border-dark" : "bg-white text-dark")"
+               style="font-size:.9rem">
+                All issues
+            </a>
+            @foreach (var view in issueViews)
+            {
+                var isActive = Model.ActiveViewId == view.Id;
+                var dotColor = string.IsNullOrEmpty(view.Color) ? "#6c757d" : view.Color;
+                <a asp-action="Index" asp-route-viewId="@view.Id"
+                   class="d-flex align-items-center gap-2 text-decoration-none px-3 py-2 rounded border @(isActive ? "bg-dark text-white border-dark" : "bg-white text-dark")"
+                   style="font-size:.9rem"
+                   title="@view.Description">
+                    <span style="width:8px;height:8px;border-radius:50%;background:@dotColor;flex-shrink:0"></span>
+                    @if (!string.IsNullOrEmpty(view.Icon))
+                    {
+                        <span>@view.Icon</span>
+                    }
+                    @view.Name
+                </a>
+            }
+        </div>
+    </div>
+}
+
+@* State filter tabs — only shown when not inside a view *@
+@if (!inView)
+{
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link @(Model.StateFilter == null ? "active" : "")"
+               asp-action="Index">All</a>
+        </li>
+        @foreach (var state in states)
+        {
+            <li class="nav-item">
+                <a class="nav-link @(Model.StateFilter == state.Id ? "active" : "")"
+                   asp-action="Index"
+                   asp-route-stateFilter="@state.Id">@state.Name</a>
+            </li>
+        }
+    </ul>
+}
+
+@if (!Model.Issues.Any())
+{
+    <p class="text-muted">No issues found.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width:90px">ID</th>
+                <th>Title</th>
+                <th style="width:140px">State</th>
+                <th style="width:100px">Priority</th>
+                <th style="width:130px">Assignee</th>
+                <th style="width:130px">Updated</th>
+                <th style="width:60px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var issue in Model.Issues)
+            {
+                <tr>
+                    <td>
+                        <span class="text-muted small font-monospace">@issue.Identifier</span>
+                    </td>
+                    <td>
+                        <a asp-action="Detail" asp-route-id="@issue.Id"
+                           class="text-decoration-none text-dark fw-medium">@issue.Title</a>
+                    </td>
+                    <td>
+                        @if (issue.State != null)
+                        {
+                            <span class="badge bg-@issue.StateBadgeClass"
+                                  style="background-color: @issue.State.Color !important">
+                                @issue.State.Name
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge bg-@issue.PriorityBadgeClass text-dark">
+                            @issue.PriorityLabel
+                        </span>
+                    </td>
+                    <td>
+                        <span class="small">@(issue.Assignee?.Name ?? "—")</span>
+                    </td>
+                    <td>
+                        <span class="small text-muted">
+                            @issue.UpdatedAt.ToString("dd MMM yyyy")
+                        </span>
+                    </td>
+                    <td>
+                        <a asp-action="Detail" asp-route-id="@issue.Id"
+                           class="btn btn-sm btn-outline-secondary">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @* Pagination — threads viewId through so it stays active across pages *@
+    @if (Model.PageInfo?.HasNextPage == true || Model.AfterCursor != null)
+    {
+        <div class="d-flex gap-2 mt-2">
+            @if (Model.AfterCursor != null)
+            {
+                <a asp-action="Index"
+                   asp-route-viewId="@Model.ActiveViewId"
+                   asp-route-stateFilter="@Model.StateFilter"
+                   class="btn btn-outline-secondary btn-sm">&larr; Back</a>
+            }
+            @if (Model.PageInfo?.HasNextPage == true)
+            {
+                <a asp-action="Index"
+                   asp-route-viewId="@Model.ActiveViewId"
+                   asp-route-stateFilter="@Model.StateFilter"
+                   asp-route-after="@Model.PageInfo.EndCursor"
+                   class="btn btn-outline-secondary btn-sm">Next &rarr;</a>
+            }
+        </div>
+    }
+}

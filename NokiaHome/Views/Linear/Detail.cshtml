@@ -1,0 +1,169 @@
+@model NokiaHome.Models.Linear.LinearIssue
+@{
+    ViewData["Title"] = Model != null ? $"{Model.Identifier} — {Model.Title}" : "Issue";
+    var states = ViewBag.States as List<NokiaHome.Models.Linear.LinearWorkflowState> ?? new();
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to issues</a>
+</div>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+@if (Model == null)
+{
+    <p class="text-muted">Issue not found.</p>
+}
+else
+{
+<div class="row g-4">
+    @* Main column *@
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="text-muted small font-monospace">@Model.Identifier</span>
+            <a href="@Model.Url" target="_blank" rel="noopener"
+               class="text-muted small" title="Open in Linear">↗</a>
+        </div>
+        <h2 class="mb-3">@Model.Title</h2>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Description</h6>
+                    <div style="white-space: pre-wrap;">@Model.Description</div>
+                </div>
+            </div>
+        }
+
+        @* Comments *@
+        @{
+            var comments = Model.Comments?.Nodes ?? new List<NokiaHome.Models.Linear.LinearComment>();
+        }
+        <h6 class="text-muted mb-3">Comments (@comments.Count)</h6>
+        @if (!comments.Any())
+        {
+            <p class="text-muted small">No comments yet.</p>
+        }
+        else
+        {
+            @foreach (var comment in comments)
+            {
+                <div class="card mb-2">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fw-medium small">@(comment.User?.Name ?? "Unknown")</span>
+                            <span class="text-muted small">
+                                @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                            </span>
+                        </div>
+                        <div style="white-space: pre-wrap; font-size: 0.9rem;">@comment.Body</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @* Sidebar *@
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <dl class="mb-0" style="row-gap: 0.75rem; display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem;">
+                    <dt class="text-muted small">State</dt>
+                    <dd class="mb-0">
+                        @if (Model.State != null)
+                        {
+                            <span class="badge bg-@Model.StateBadgeClass"
+                                  style="background-color: @Model.State.Color !important">
+                                @Model.State.Name
+                            </span>
+                        }
+                        else { <span class="text-muted">—</span> }
+                    </dd>
+
+                    <dt class="text-muted small">Priority</dt>
+                    <dd class="mb-0">
+                        <span class="badge bg-@Model.PriorityBadgeClass text-dark">
+                            @Model.PriorityLabel
+                        </span>
+                    </dd>
+
+                    <dt class="text-muted small">Assignee</dt>
+                    <dd class="mb-0 small">@(Model.Assignee?.Name ?? "Unassigned")</dd>
+
+                    <dt class="text-muted small">Team</dt>
+                    <dd class="mb-0 small">@(Model.Team?.Name ?? "—")</dd>
+
+                    <dt class="text-muted small">Created</dt>
+                    <dd class="mb-0 small">@Model.CreatedAt.ToString("dd MMM yyyy")</dd>
+
+                    <dt class="text-muted small">Updated</dt>
+                    <dd class="mb-0 small">@Model.UpdatedAt.ToString("dd MMM yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+
+        @* Change priority *@
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title mb-2">Change priority</h6>
+                <div class="d-flex flex-column gap-1">
+                    @foreach (var (label, value, color) in new (string, int, string)[] {
+                        ("Urgent", 1, "danger"),
+                        ("High",   2, "warning"),
+                        ("Medium", 3, "info"),
+                        ("Low",    4, "secondary"),
+                        ("No priority", 0, "light")
+                    })
+                    {
+                        var isCurrent = Model.Priority == value;
+                        <form asp-action="UpdatePriority" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="issueId"   value="@Model.Id" />
+                            <input type="hidden" name="priority"  value="@value" />
+                            <input type="hidden" name="returnUrl" value="@Url.Action("Detail", new { id = Model.Id })" />
+                            <button type="submit"
+                                    class="btn btn-sm w-100 text-start @(isCurrent ? $"btn-{color}" : $"btn-outline-{color}")"
+                                    @(isCurrent ? "disabled" : "")>
+                                @label
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* Change state *@
+        @if (states.Any())
+        {
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6 class="card-title mb-2">Change state</h6>
+                    <div class="d-flex flex-column gap-1">
+                        @foreach (var state in states)
+                        {
+                            var isCurrent = Model.State?.Id == state.Id;
+                            <form asp-action="UpdateState" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="issueId" value="@Model.Id" />
+                                <input type="hidden" name="stateId" value="@state.Id" />
+                                <input type="hidden" name="returnUrl"
+                                       value="@Url.Action("Detail", new { id = Model.Id })" />
+                                <button type="submit"
+                                        class="btn btn-sm w-100 text-start @(isCurrent ? "btn-dark" : "btn-outline-secondary")"
+                                        @(isCurrent ? "disabled" : "")>
+                                    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@state.Color;margin-right:6px"></span>
+                                    @state.Name
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+}

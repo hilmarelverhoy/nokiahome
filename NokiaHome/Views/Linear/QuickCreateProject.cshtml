@@ -1,0 +1,62 @@
+@{
+    ViewData["Title"] = "Create issue — pick project";
+    var priority = (int)ViewBag.Priority;
+    var projects = ViewBag.Projects as List<NokiaHome.Models.Linear.LinearProject> ?? new();
+
+    string PriorityLabel(int p) => p switch
+    {
+        1 => "Urgent",
+        2 => "High",
+        3 => "Medium",
+        4 => "Low",
+        _ => "No priority"
+    };
+
+    string PriorityBadgeClass(int p) => p switch
+    {
+        1 => "danger",
+        2 => "warning",
+        3 => "info",
+        4 => "secondary",
+        _ => "secondary"
+    };
+}
+
+<div class="mb-3">
+    <a asp-action="QuickCreate" class="text-decoration-none text-muted small">&larr; Back</a>
+</div>
+
+<h4 class="mb-1">New issue</h4>
+<p class="text-muted mb-1">
+    Priority: <span class="badge bg-@PriorityBadgeClass(priority)">@PriorityLabel(priority)</span>
+</p>
+<p class="text-muted mb-4">Which project?</p>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<div class="d-flex flex-column gap-2" style="max-width: 400px;">
+    @* No-project option always first *@
+    <a asp-action="QuickCreateForm"
+       asp-route-priority="@priority"
+       class="btn btn-outline-secondary btn-lg text-start">
+        No project
+    </a>
+
+    @foreach (var project in projects)
+    {
+        <a asp-action="QuickCreateForm"
+           asp-route-priority="@priority"
+           asp-route-projectId="@project.Id"
+           asp-route-projectName="@project.Name"
+           class="btn btn-outline-primary btn-lg text-start">
+            @if (!string.IsNullOrEmpty(project.Color))
+            {
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:@project.Color;margin-right:8px;vertical-align:middle;"></span>
+            }
+            @project.Name
+        </a>
+    }
+</div>

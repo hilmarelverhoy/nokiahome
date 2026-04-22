@@ -1,3 +1,5 @@
+using NokiaHome.Settings;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,10 @@ builder.Services.AddControllersWithViews();
 // Add HttpClient and Entur services
 builder.Services.AddHttpClient<NokiaHome.Services.IEnturGraphQLService, NokiaHome.Services.EnturGraphQLService>();
 builder.Services.AddHttpClient<NokiaHome.Services.IEnturGeocodingService, NokiaHome.Services.EnturGeocodingService>();
+
+// Linear integration — API key supplied via Linear__ApiKey environment variable
+builder.Services.Configure<LinearSettings>(builder.Configuration.GetSection("Linear"));
+builder.Services.AddHttpClient<NokiaHome.Services.ILinearService, NokiaHome.Services.LinearService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Create issue — pick priority";
+}
+
+<div class="mb-3">
+    <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to issues</a>
+</div>
+
+<h4 class="mb-1">New issue</h4>
+<p class="text-muted mb-4">What priority?</p>
+
+<div class="d-flex flex-column gap-2" style="max-width: 320px;">
+    <a asp-action="QuickCreateProject" asp-route-priority="1"
+       class="btn btn-outline-danger btn-lg text-start">
+        Urgent
+    </a>
+    <a asp-action="QuickCreateProject" asp-route-priority="2"
+       class="btn btn-outline-warning btn-lg text-start">
+        High
+    </a>
+    <a asp-action="QuickCreateProject" asp-route-priority="3"
+       class="btn btn-outline-info btn-lg text-start">
+        Medium
+    </a>
+    <a asp-action="QuickCreateProject" asp-route-priority="4"
+       class="btn btn-outline-secondary btn-lg text-start">
+        Low
+    </a>
+    <a asp-action="QuickCreateProject" asp-route-priority="0"
+       class="btn btn-outline-light btn-lg text-start text-dark border">
+        No priority
+    </a>
+</div>

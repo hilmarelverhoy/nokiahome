@@ -1,0 +1,46 @@
+@model NokiaHome.Models.Linear.QuickCreateFormViewModel
+@{
+    ViewData["Title"] = "Create issue — details";
+}
+
+<div class="mb-3">
+    <a asp-action="QuickCreateProject" asp-route-priority="@Model.Priority"
+       class="text-decoration-none text-muted small">&larr; Back</a>
+</div>
+
+<h4 class="mb-1">New issue</h4>
+<p class="text-muted mb-4">
+    Priority: <span class="badge bg-@Model.PriorityBadgeClass">@Model.PriorityLabel</span>
+    @if (!string.IsNullOrEmpty(Model.ProjectName))
+    {
+        <span class="ms-2">Project: <strong>@Model.ProjectName</strong></span>
+    }
+</p>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<form asp-action="QuickCreateForm" method="post" style="max-width: 600px;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Priority" />
+    <input type="hidden" asp-for="ProjectId" />
+    <input type="hidden" asp-for="ProjectName" />
+    <input type="hidden" asp-for="StateId" />
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control form-control-lg" autofocus
+               placeholder="Issue title" required />
+        <span asp-validation-for="Title" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-4">
+        <label asp-for="Description" class="form-label">Description <span class="text-muted">(optional)</span></label>
+        <textarea asp-for="Description" class="form-control" rows="4"
+                  placeholder="Add more detail…"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create issue</button>
+</form>
