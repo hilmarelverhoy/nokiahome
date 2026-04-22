@@ -264,27 +264,31 @@ namespace NokiaHome.Controllers
             }
         }
 
-        // GET /Linear/QuickCreateForm?priority=1&projectId=X&projectName=Y — Step 3: title + description
+        // GET /Linear/QuickCreateForm?priority=1&projectId=X&projectName=Y — Step 3: title + description + labels
         public async Task<IActionResult> QuickCreateForm(int priority, string? projectId, string? projectName)
         {
             try
             {
-                var states = await _linearService.GetStatesAsync();
-                var todoState = states.FirstOrDefault(s =>
+                var statesTask = _linearService.GetStatesAsync();
+                var labelsTask = _linearService.GetLabelsAsync();
+                await Task.WhenAll(statesTask, labelsTask);
+
+                var todoState = statesTask.Result.FirstOrDefault(s =>
                     s.Name.Equals("Todo", StringComparison.OrdinalIgnoreCase))
-                    ?? states.FirstOrDefault(s => s.Type == "unstarted");
+                    ?? statesTask.Result.FirstOrDefault(s => s.Type == "unstarted");
 
                 return View(new QuickCreateFormViewModel
                 {
                     Priority = priority,
                     ProjectId = projectId,
                     ProjectName = projectName,
-                    StateId = todoState?.Id
+                    StateId = todoState?.Id,
+                    AvailableLabels = labelsTask.Result
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load states for quick create form");
+                _logger.LogError(ex, "Failed to load states/labels for quick create form");
                 return View(new QuickCreateFormViewModel
                 {
                     Priority = priority,
@@ -309,6 +313,7 @@ namespace NokiaHome.Controllers
                     model.Description,
                     model.Priority,
                     model.StateId,
+                    labelIds: model.LabelIds.Count > 0 ? model.LabelIds : null,
                     projectId: string.IsNullOrEmpty(model.ProjectId) ? null : model.ProjectId);
 
                 return RedirectToAction(nameof(Detail), new { id = issue.Id });
@@ -317,6 +322,7 @@ namespace NokiaHome.Controllers
             {
                 _logger.LogError(ex, "Failed to quick-create issue");
                 ViewBag.ErrorMessage = $"Could not create issue: {ex.Message}";
+                try { model.AvailableLabels = await _linearService.GetLabelsAsync(); } catch { /* keep empty */ }
                 return View(model);
             }
         }

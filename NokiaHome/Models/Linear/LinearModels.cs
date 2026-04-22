@@ -457,6 +457,8 @@ namespace NokiaHome.Models.Linear
         public string? ProjectId { get; set; }
         public string? ProjectName { get; set; }
         public string? StateId { get; set; }
+        public List<string> LabelIds { get; set; } = new();
+        public List<LinearIssueLabel> AvailableLabels { get; set; } = new();
 
         public string PriorityLabel => Priority switch
         {
