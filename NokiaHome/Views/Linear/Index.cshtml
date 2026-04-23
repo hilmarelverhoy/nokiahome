@@ -90,59 +90,30 @@
 }
 else
 {
-    <table class="table table-hover align-middle">
-        <thead class="table-light">
-            <tr>
-                <th style="width:90px">ID</th>
-                <th>Title</th>
-                <th style="width:140px">State</th>
-                <th style="width:100px">Priority</th>
-                <th style="width:130px">Assignee</th>
-                <th style="width:130px">Updated</th>
-                <th style="width:60px"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var issue in Model.Issues)
-            {
-                <tr>
-                    <td>
-                        <span class="text-muted small font-monospace">@issue.Identifier</span>
-                    </td>
-                    <td>
-                        <a asp-action="Detail" asp-route-id="@issue.Id"
-                           class="text-decoration-none text-dark fw-medium">@issue.Title</a>
-                    </td>
-                    <td>
-                        @if (issue.State != null)
-                        {
-                            <span class="badge bg-@issue.StateBadgeClass"
-                                  style="background-color: @issue.State.Color !important">
-                                @issue.State.Name
-                            </span>
-                        }
-                    </td>
-                    <td>
-                        <span class="badge bg-@issue.PriorityBadgeClass text-dark">
-                            @issue.PriorityLabel
-                        </span>
-                    </td>
-                    <td>
-                        <span class="small">@(issue.Assignee?.Name ?? "—")</span>
-                    </td>
-                    <td>
-                        <span class="small text-muted">
-                            @issue.UpdatedAt.ToString("dd MMM yyyy")
-                        </span>
-                    </td>
-                    <td>
-                        <a asp-action="Detail" asp-route-id="@issue.Id"
-                           class="btn btn-sm btn-outline-secondary">View</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @foreach (var issue in Model.Issues)
+    {
+        <div class="d-flex align-items-stretch border-bottom py-1">
+            <div class="flex-grow-1 pe-2 min-w-0">
+                <div class="text-truncate">
+                    <a asp-action="Detail" asp-route-id="@issue.Id"
+                       class="text-decoration-none text-dark fw-medium" style="font-size:.85rem">@issue.Title</a>
+                </div>
+                <div class="d-flex flex-wrap gap-1 mt-1 align-items-center">
+                    <span class="text-muted font-monospace" style="font-size:.7rem">@issue.Identifier</span>
+                    @if (issue.State != null)
+                    {
+                        <span class="badge" style="font-size:.65rem;background-color:@issue.State.Color !important">@issue.State.Name</span>
+                    }
+                    <span class="badge bg-@issue.PriorityBadgeClass text-dark" style="font-size:.65rem">@issue.PriorityLabel</span>
+                    <span class="text-muted" style="font-size:.7rem">@(issue.Assignee?.Name ?? "—")</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-stretch flex-shrink-0">
+                <a asp-action="Detail" asp-route-id="@issue.Id"
+                   class="btn btn-sm btn-outline-secondary d-flex align-items-center px-2" style="font-size:.75rem">View</a>
+            </div>
+        </div>
+    }
 
     @* Pagination — threads viewId through so it stays active across pages *@
     @if (Model.PageInfo?.HasNextPage == true || Model.AfterCursor != null)
