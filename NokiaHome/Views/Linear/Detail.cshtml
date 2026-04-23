@@ -120,9 +120,7 @@ else
 }
 
 @* Comments *@
-@{
-    var comments = Model.Comments?.Nodes ?? new List<NokiaHome.Models.Linear.LinearComment>();
-}
+var comments = Model.Comments?.Nodes ?? new List<NokiaHome.Models.Linear.LinearComment>();
 <div class="text-muted mb-1" style="font-size:.7rem">Comments (@comments.Count)</div>
 @if (!comments.Any())
 {
