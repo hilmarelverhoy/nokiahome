@@ -1,0 +1,41 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docview
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.swp
+
+# dotnet publish output
+publish/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / local config
+appsettings.Development.json
+*.local.json
+secrets.json
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
