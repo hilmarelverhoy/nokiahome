@@ -1,0 +1,10 @@
+@model NokiaHome.Models.Linear.LinearWorkflowState
+
+@if (Model != null)
+{
+    <span class="badge" style="font-size:.65rem;background-color:@Model.Color !important">@Model.Name</span>
+}
+else
+{
+    <span class="text-muted" style="font-size:.7rem">—</span>
+}

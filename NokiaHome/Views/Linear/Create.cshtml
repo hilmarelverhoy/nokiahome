@@ -38,19 +38,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-medium">Labels</label>
                     <div class="d-flex flex-wrap gap-2">
-                        @foreach (var label in Model.AvailableLabels)
-                        {
-                            var isChecked = Model.LabelIds.Contains(label.Id);
-                            <div class="form-check form-check-inline m-0">
-                                <input class="form-check-input" type="checkbox"
-                                       name="LabelIds" value="@label.Id" id="label_@label.Id"
-                                       @(isChecked ? "checked" : "") />
-                                <label class="form-check-label d-flex align-items-center gap-1" for="label_@label.Id">
-                                    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:@label.Color"></span>
-                                    @label.Name
-                                </label>
-                            </div>
-                        }
+                        <partial name="_LabelPicker" model="@((Model.AvailableLabels, Model.LabelIds))" />
                     </div>
                 </div>
             }

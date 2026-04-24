@@ -1,0 +1,151 @@
+@model NokiaHome.Models.Trip.Leg
+
+@{
+    var stepIndex = ViewData["StepIndex"] as int? ?? 0;
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Step @stepIndex</h5>
+    </div>
+    <div class="card-body">
+        @* Departure / Arrival *@
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Departure:</strong>
+                <div class="h6">@Model.FormattedStartTime from @(Model.FromPlace?.Name ?? "Unknown")</div>
+                @if (Model.FromPlace?.Quay != null)
+                {
+                    <small class="text-muted">Platform: @Model.FromPlace.Quay.Name</small>
+                    @if (!string.IsNullOrEmpty(Model.FromPlace.Quay.Description))
+                    {
+                        <br><small class="text-muted">@Model.FromPlace.Quay.Description</small>
+                    }
+                }
+            </div>
+            <div class="col-md-6">
+                <strong>Arrival:</strong>
+                <div class="h6">@Model.FormattedEndTime at @(Model.ToPlace?.Name ?? "Unknown")</div>
+                @if (Model.ToPlace?.Quay != null)
+                {
+                    <small class="text-muted">Platform: @Model.ToPlace.Quay.Name</small>
+                    @if (!string.IsNullOrEmpty(Model.ToPlace.Quay.Description))
+                    {
+                        <br><small class="text-muted">@Model.ToPlace.Quay.Description</small>
+                    }
+                }
+            </div>
+        </div>
+
+        @* Line / Mode / Duration *@
+        <div class="row mb-3">
+            <div class="col-md-4">
+                @if (Model.Line != null)
+                {
+                    var bgColor = Model.Line.Presentation?.HexColour ?? "#007bff";
+                    var textColor = Model.Line.Presentation?.HexTextColour ?? "#ffffff";
+                    <div class="mb-2">
+                        <span style="background-color: @bgColor; color: @textColor; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 1.1em;">
+                            @Model.Line.PublicCode
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Line.Name))
+                    {
+                        <div><strong>Line:</strong> @Model.Line.Name</div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Line.TransportMode))
+                    {
+                        <div><strong>Mode:</strong> @Model.Line.TransportMode</div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Line.Description))
+                    {
+                        <div><strong>Description:</strong> @Model.Line.Description</div>
+                    }
+                }
+                else
+                {
+                    <span style="background-color: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
+                        @Model.Mode
+                    </span>
+                }
+            </div>
+            <div class="col-md-4">
+                <div><strong>Duration:</strong> @Model.FormattedDuration</div>
+                <div><strong>Distance:</strong> @Model.FormattedDistance</div>
+            </div>
+            <div class="col-md-4">
+                @if (Model.FromEstimatedCall != null)
+                {
+                    @if (Model.FromEstimatedCall.AimedDepartureTime.HasValue)
+                    {
+                        <div><strong>Scheduled:</strong> @Model.FromEstimatedCall.FormattedAimedDeparture</div>
+                    }
+                    @if (Model.FromEstimatedCall.ActualDepartureTime.HasValue)
+                    {
+                        <div><strong>Actual:</strong> @Model.FromEstimatedCall.FormattedActualDeparture</div>
+                    }
+                    @if (Model.FromEstimatedCall.Quay != null)
+                    {
+                        <div><strong>Platform:</strong> @Model.FromEstimatedCall.Quay.Name</div>
+                    }
+                }
+            </div>
+        </div>
+
+        @* Service notices *@
+        @if (Model.Line?.Notices?.Any() == true)
+        {
+            <h6>Service Notices:</h6>
+            @foreach (var notice in Model.Line.Notices)
+            {
+                <div class="alert alert-warning mb-2">
+                    <strong>@(notice.PublicCode ?? "Notice"):</strong> @notice.Text
+                </div>
+            }
+        }
+
+        @* Available platforms *@
+        @if (Model.Line?.Quays?.Any() == true)
+        {
+            <h6>Available Platforms:</h6>
+            <div class="row">
+                @foreach (var quay in Model.Line.Quays)
+                {
+                    <div class="col-md-4 mb-2">
+                        <div class="border p-2">
+                            <strong>@quay.Name</strong>
+                            @if (!string.IsNullOrEmpty(quay.Description))
+                            {
+                                <br><small>@quay.Description</small>
+                            }
+                            @if (!string.IsNullOrEmpty(quay.StopType))
+                            {
+                                <br><small class="text-muted">Type: @quay.StopType</small>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @* Operator branding *@
+        @if (Model.Line?.Branding != null)
+        {
+            <div class="mt-3">
+                <h6>Operator Information:</h6>
+                @if (!string.IsNullOrEmpty(Model.Line.Branding.Name))
+                {
+                    <div><strong>Operator:</strong> @Model.Line.Branding.Name</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Line.Branding.Description))
+                {
+                    <div><strong>Description:</strong> @Model.Line.Branding.Description</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Line.Branding.Url))
+                {
+                    <div><strong>Website:</strong> <a href="@Model.Line.Branding.Url" target="_blank">@Model.Line.Branding.Url</a></div>
+                }
+            </div>
+        }
+    </div>
+</div>

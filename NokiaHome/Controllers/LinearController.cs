@@ -25,9 +25,22 @@ namespace NokiaHome.Controllers
         // GET /Linear/Debug — step-by-step connectivity check
         public async Task<IActionResult> Debug()
         {
+            var req = Request;
             var result = new LinearDebugViewModel
             {
-                ConfiguredTeamId = _settings.TeamId
+                ConfiguredTeamId = _settings.TeamId,
+                RequestMethod = req.Method,
+                RequestPath = req.Path.ToString(),
+                RequestQueryString = req.QueryString.ToString(),
+                RequestScheme = req.Scheme,
+                RequestHost = req.Host.ToString(),
+                RemoteIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                Headers = req.Headers
+                    .ToDictionary(h => h.Key, h => h.Value.ToString()),
+                Cookies = req.Cookies
+                    .ToDictionary(c => c.Key, c => c.Value),
+                RouteValues = RouteData.Values
+                    .ToDictionary(r => r.Key, r => r.Value?.ToString() ?? ""),
             };
 
             // Step 1: auth check via viewer query

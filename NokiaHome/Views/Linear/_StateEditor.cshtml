@@ -1,0 +1,32 @@
+@model NokiaHome.Models.Linear.LinearIssue
+
+@{
+    var states = ViewBag.States as List<NokiaHome.Models.Linear.LinearWorkflowState> ?? new();
+}
+
+@if (states.Any())
+{
+    <div class="card mb-2">
+        <div class="card-body p-2">
+            <div class="text-muted mb-1" style="font-size:.7rem">State</div>
+            <div class="d-flex flex-wrap gap-1">
+                @foreach (var state in states)
+                {
+                    var isCurrent = Model.State?.Id == state.Id;
+                    <form asp-action="UpdateState" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="issueId"   value="@Model.Id" />
+                        <input type="hidden" name="stateId"   value="@state.Id" />
+                        <input type="hidden" name="returnUrl" value="@Url.Action("Detail", new { id = Model.Id })" />
+                        <button type="submit"
+                                class="btn btn-sm @(isCurrent ? "btn-dark" : "btn-outline-secondary")"
+                                style="font-size:.7rem;padding:.15rem .4rem"
+                                @(isCurrent ? "disabled" : "")>
+                            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:@state.Color;margin-right:4px"></span>@state.Name
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+}

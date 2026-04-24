@@ -1,0 +1,28 @@
+@model NokiaHome.Models.Linear.LinearIssue
+
+@{
+    const int titleMaxLength = 35;
+    var priorityIcon = Model.Priority switch
+    {
+        1 => "U",
+        2 => "H",
+        3 => "M",
+        4 => "L",
+        _ => "—"
+    };
+}
+
+<div class="d-flex align-items-stretch border-bottom py-2">
+    <div class="flex-grow-1 pe-2 min-w-0">
+        <div class="text-truncate">
+            <a asp-action="Detail" asp-route-id="@Model.Id"
+               class="text-decoration-none text-dark fw-medium" style="font-size:.85rem"
+               title="@Model.Title">@(Model.Title.Length > titleMaxLength ? Model.Title[..(titleMaxLength - 3)] + "..." : Model.Title)</a>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-1 align-items-center">
+            <span class="text-muted font-monospace" style="font-size:.7rem">@Model.Identifier</span>
+            <partial name="_StateBadge" model="Model.State" />
+            <span class="badge bg-@Model.PriorityBadgeClass text-dark" style="font-size:.65rem" title="@Model.PriorityLabel">@priorityIcon</span>
+        </div>
+    </div>
+</div>

@@ -489,5 +489,16 @@ namespace NokiaHome.Models.Linear
         public List<LinearIssue>? RawIssues { get; set; }
         public string? RawIssuesError { get; set; }
         public string ConfiguredTeamId { get; set; } = string.Empty;
+
+        // Request diagnostics
+        public string RequestMethod { get; set; } = string.Empty;
+        public string RequestPath { get; set; } = string.Empty;
+        public string RequestQueryString { get; set; } = string.Empty;
+        public string RequestScheme { get; set; } = string.Empty;
+        public string RequestHost { get; set; } = string.Empty;
+        public string? RemoteIpAddress { get; set; }
+        public Dictionary<string, string> Headers { get; set; } = new();
+        public Dictionary<string, string> Cookies { get; set; } = new();
+        public Dictionary<string, string> RouteValues { get; set; } = new();
     }
 }

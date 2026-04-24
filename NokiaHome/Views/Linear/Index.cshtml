@@ -5,7 +5,6 @@
     var customViews = ViewBag.CustomViews as List<NokiaHome.Models.Linear.LinearCustomView> ?? new();
     var issueViews = customViews.Where(v => v.ModelName == "Issue").ToList();
     var inView = !string.IsNullOrEmpty(Model.ActiveViewId);
-    const int issueTitleMaxLength = 35;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -74,31 +73,7 @@ else
 {
     @foreach (var issue in Model.Issues)
     {
-        var priorityIcon = issue.Priority switch
-        {
-            1 => "U",
-            2 => "H",
-            3 => "M",
-            4 => "L",
-            _ => "—"
-        };
-        <div class="d-flex align-items-stretch border-bottom py-2">
-            <div class="flex-grow-1 pe-2 min-w-0">
-                <div class="text-truncate">
-                    <a asp-action="Detail" asp-route-id="@issue.Id"
-                       class="text-decoration-none text-dark fw-medium" style="font-size:.85rem"
-                       title="@issue.Title">@(issue.Title.Length > issueTitleMaxLength ? issue.Title[..(issueTitleMaxLength - 3)] + "..." : issue.Title)</a>
-                </div>
-                <div class="d-flex flex-wrap gap-2 mt-1 align-items-center">
-                    <span class="text-muted font-monospace" style="font-size:.7rem">@issue.Identifier</span>
-                    @if (issue.State != null)
-                    {
-                        <span class="badge" style="font-size:.65rem;background-color:@issue.State.Color !important">@issue.State.Name</span>
-                    }
-                    <span class="badge bg-@issue.PriorityBadgeClass text-dark" style="font-size:.65rem" title="@issue.PriorityLabel">@priorityIcon</span>
-                </div>
-            </div>
-        </div>
+        <partial name="_IssueRow" model="issue" />
     }
 
     @* Pagination — threads viewId through so it stays active across pages *@

@@ -1,0 +1,29 @@
+@model NokiaHome.Models.Linear.LinearIssue
+
+<div class="card mb-2">
+    <div class="card-body p-2">
+        <div class="text-muted mb-1" style="font-size:.7rem">Priority</div>
+        <div class="d-flex flex-wrap gap-1">
+            @foreach (var (label, value, color) in new (string, int, string)[] {
+                ("Urgent", 1, "danger"),
+                ("High",   2, "warning"),
+                ("Medium", 3, "info"),
+                ("Low",    4, "secondary"),
+                ("None",   0, "light")
+            })
+            {
+                var isCurrent = Model.Priority == value;
+                <form asp-action="UpdatePriority" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="issueId"   value="@Model.Id" />
+                    <input type="hidden" name="priority"  value="@value" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Detail", new { id = Model.Id })" />
+                    <button type="submit"
+                            class="btn btn-sm @(isCurrent ? $"btn-{color}" : $"btn-outline-{color}")"
+                            style="font-size:.7rem;padding:.15rem .4rem"
+                            @(isCurrent ? "disabled" : "")>@label</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
