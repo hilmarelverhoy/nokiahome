@@ -49,6 +49,9 @@ namespace NokiaHome.Services
         /// <summary>Returns all projects accessible to the authenticated user.</summary>
         Task<List<LinearProject>> GetProjectsAsync();
 
+        /// <summary>Returns a single project with its paginated list of issues.</summary>
+        Task<LinearProjectDetailViewModel> GetProjectDetailAsync(string projectId, int first = 25, string? after = null);
+
         /// <summary>Updates an existing issue's state.</summary>
         Task UpdateIssueStateAsync(string issueId, string stateId);
 

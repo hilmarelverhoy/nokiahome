@@ -414,8 +414,57 @@ namespace NokiaHome.Models.Linear
         [JsonPropertyName("icon")]
         public string? Icon { get; set; }
 
+        /// <summary>One of: planned, inProgress, paused, completed, cancelled</summary>
         [JsonPropertyName("state")]
         public string? State { get; set; }
+
+        [JsonPropertyName("progress")]
+        public double? Progress { get; set; }
+
+        [JsonPropertyName("issueCountByState")]
+        public LinearProjectIssueCountByState? IssueCountByState { get; set; }
+
+        public string StateBadgeClass => State switch
+        {
+            "inProgress" => "primary",
+            "completed"  => "success",
+            "cancelled"  => "secondary",
+            "paused"     => "warning",
+            _            => "light"
+        };
+
+        public string StateLabel => State switch
+        {
+            "inProgress" => "In Progress",
+            "completed"  => "Completed",
+            "cancelled"  => "Cancelled",
+            "paused"     => "Paused",
+            "planned"    => "Planned",
+            _            => State ?? "Unknown"
+        };
+    }
+
+    public class LinearProjectIssueCountByState
+    {
+        [JsonPropertyName("started")]
+        public int Started { get; set; }
+
+        [JsonPropertyName("unstarted")]
+        public int Unstarted { get; set; }
+
+        [JsonPropertyName("completed")]
+        public int Completed { get; set; }
+
+        [JsonPropertyName("cancelled")]
+        public int Cancelled { get; set; }
+
+        public int Total => Started + Unstarted + Completed + Cancelled;
+    }
+
+    public class LinearProjectWithIssues : LinearProject
+    {
+        [JsonPropertyName("issues")]
+        public LinearIssueConnection? Issues { get; set; }
     }
 
     public class LinearProjectConnection
@@ -434,6 +483,26 @@ namespace NokiaHome.Models.Linear
     {
         [JsonPropertyName("projects")]
         public LinearProjectConnection? Projects { get; set; }
+    }
+
+    public class LinearProjectDetailResponse
+    {
+        [JsonPropertyName("data")]
+        public ProjectDetailData? Data { get; set; }
+    }
+
+    public class ProjectDetailData
+    {
+        [JsonPropertyName("project")]
+        public LinearProjectWithIssues? Project { get; set; }
+    }
+
+    public class LinearProjectDetailViewModel
+    {
+        public LinearProjectWithIssues Project { get; set; } = new();
+        public List<LinearIssue> Issues { get; set; } = new();
+        public LinearPageInfo? PageInfo { get; set; }
+        public string? AfterCursor { get; set; }
     }
 
     // ---------------------------------------------------------------------------

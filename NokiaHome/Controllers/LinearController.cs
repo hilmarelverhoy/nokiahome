@@ -426,5 +426,45 @@ namespace NokiaHome.Controllers
 
             return RedirectToAction(nameof(Detail), new { id = issueId });
         }
+
+        // GET /Linear/Projects
+        public async Task<IActionResult> Projects()
+        {
+            try
+            {
+                var projects = await _linearService.GetProjectsAsync();
+                return View(projects);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load Linear projects ({Type})", ex.GetType().Name);
+                ViewBag.ErrorMessage = $"Could not load projects: [{ex.GetType().Name}] {ex.Message}";
+                return View(new List<LinearProject>());
+            }
+        }
+
+        // GET /Linear/ProjectDetail/{id}
+        public async Task<IActionResult> ProjectDetail(string id, string? after = null)
+        {
+            if (string.IsNullOrEmpty(id))
+                return RedirectToAction(nameof(Projects));
+
+            try
+            {
+                var vm = await _linearService.GetProjectDetailAsync(id, first: 25, after);
+                if (string.IsNullOrEmpty(vm.Project.Id))
+                {
+                    ViewBag.ErrorMessage = "Project not found.";
+                    return View(vm);
+                }
+                return View(vm);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load project {ProjectId}", id);
+                ViewBag.ErrorMessage = $"Could not load project: {ex.Message}";
+                return View(new LinearProjectDetailViewModel());
+            }
+        }
     }
 }

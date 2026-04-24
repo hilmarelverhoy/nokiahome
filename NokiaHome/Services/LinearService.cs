@@ -251,6 +251,7 @@ namespace NokiaHome.Services
                       color
                       icon
                       state
+                      progress
                     }
                   }
                 }
@@ -258,6 +259,75 @@ namespace NokiaHome.Services
 
             var response = await ExecuteQueryAsync<LinearProjectsResponse>(query);
             return response?.Data?.Projects?.Nodes ?? new List<LinearProject>();
+        }
+
+        public async Task<LinearProjectDetailViewModel> GetProjectDetailAsync(
+            string projectId,
+            int first = 25,
+            string? after = null)
+        {
+            const string query = """
+                query ProjectDetail($id: String!, $first: Int!, $after: String) {
+                  project(id: $id) {
+                    id
+                    name
+                    description
+                    color
+                    icon
+                    state
+                    progress
+                    issues(first: $first, after: $after, orderBy: updatedAt) {
+                      nodes {
+                        id
+                        identifier
+                        title
+                        priority
+                        priorityLabel
+                        url
+                        createdAt
+                        updatedAt
+                        state {
+                          id
+                          name
+                          color
+                          type
+                        }
+                        assignee {
+                          id
+                          name
+                          avatarUrl
+                        }
+                        team {
+                          id
+                          name
+                          key
+                        }
+                      }
+                      pageInfo {
+                        hasNextPage
+                        hasPreviousPage
+                        endCursor
+                        startCursor
+                      }
+                    }
+                  }
+                }
+                """;
+
+            var variables = new Dictionary<string, object?> { ["id"] = projectId, ["first"] = first };
+            if (!string.IsNullOrEmpty(after))
+                variables["after"] = after;
+
+            var response = await ExecuteQueryAsync<LinearProjectDetailResponse>(query, variables);
+            var project = response?.Data?.Project ?? new LinearProjectWithIssues();
+
+            return new LinearProjectDetailViewModel
+            {
+                Project = project,
+                Issues = project.Issues?.Nodes ?? new List<LinearIssue>(),
+                PageInfo = project.Issues?.PageInfo,
+                AfterCursor = after
+            };
         }
 
         public async Task UpdateIssueStateAsync(string issueId, string stateId)
