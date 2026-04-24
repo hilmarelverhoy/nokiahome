@@ -308,6 +308,31 @@ namespace NokiaHome.Services
                 _logger.LogWarning("UpdateIssuePriority returned success=false for issue {IssueId}", issueId);
         }
 
+        public async Task AddCommentAsync(string issueId, string body)
+        {
+            const string mutation = """
+                mutation CommentCreate($input: CommentCreateInput!) {
+                  commentCreate(input: $input) {
+                    success
+                    comment {
+                      id
+                      body
+                      createdAt
+                    }
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearMutationResponse>(
+                mutation,
+                new Dictionary<string, object?> { ["input"] = new Dictionary<string, object?> { ["issueId"] = issueId, ["body"] = body } });
+
+            var success = response?.Data?.CommentCreate?.Success ?? false;
+
+            if (!success)
+                _logger.LogWarning("AddComment returned success=false for issue {IssueId}", issueId);
+        }
+
         // -----------------------------------------------------------------------
         // Private helpers
         // -----------------------------------------------------------------------

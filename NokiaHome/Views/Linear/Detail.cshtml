@@ -83,4 +83,19 @@ else
         </div>
     }
 }
+
+@* Add comment *@
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger py-1 px-2 mt-2" style="font-size:.75rem">@TempData["ErrorMessage"]</div>
+}
+<form asp-action="AddComment" method="post" class="mt-2">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="issueId" value="@Model.Id" />
+    <div class="mb-1">
+        <textarea name="body" rows="3" class="form-control form-control-sm"
+                  placeholder="Add a comment…" style="font-size:.8rem;resize:vertical"></textarea>
+    </div>
+    <button type="submit" class="btn btn-sm btn-primary" style="font-size:.75rem">Add comment</button>
+</form>
 }

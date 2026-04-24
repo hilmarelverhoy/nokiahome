@@ -91,6 +91,9 @@ namespace NokiaHome.Models.Linear
 
         [JsonPropertyName("issueUpdate")]
         public IssueMutationPayload? IssueUpdate { get; set; }
+
+        [JsonPropertyName("commentCreate")]
+        public CommentMutationPayload? CommentCreate { get; set; }
     }
 
     public class IssueMutationPayload
@@ -100,6 +103,15 @@ namespace NokiaHome.Models.Linear
 
         [JsonPropertyName("issue")]
         public LinearIssue? Issue { get; set; }
+    }
+
+    public class CommentMutationPayload
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("comment")]
+        public LinearComment? Comment { get; set; }
     }
 
     // ---------------------------------------------------------------------------

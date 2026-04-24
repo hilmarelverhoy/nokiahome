@@ -402,5 +402,29 @@ namespace NokiaHome.Controllers
                 return View();
             }
         }
+
+        // POST /Linear/AddComment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(string issueId, string body)
+        {
+            if (string.IsNullOrEmpty(issueId))
+                return BadRequest();
+
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                try
+                {
+                    await _linearService.AddCommentAsync(issueId, body.Trim());
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to add comment to issue {IssueId}", issueId);
+                    TempData["ErrorMessage"] = $"Could not add comment: {ex.Message}";
+                }
+            }
+
+            return RedirectToAction(nameof(Detail), new { id = issueId });
+        }
     }
 }

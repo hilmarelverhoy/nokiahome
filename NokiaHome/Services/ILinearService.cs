@@ -54,5 +54,8 @@ namespace NokiaHome.Services
 
         /// <summary>Updates an existing issue's priority (0=None, 1=Urgent, 2=High, 3=Medium, 4=Low).</summary>
         Task UpdateIssuePriorityAsync(string issueId, int priority);
+
+        /// <summary>Adds a comment to an existing issue.</summary>
+        Task AddCommentAsync(string issueId, string body);
     }
 }
