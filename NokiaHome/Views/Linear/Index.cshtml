@@ -38,7 +38,7 @@
 @if (issueViews.Any())
 {
     <div class="mb-3">
-        <select class="form-select form-select-sm" style="width:auto;max-width:220px;font-size:.85rem"
+        <select class="form-select form-select-sm" style="width:auto;max-width:100px;font-size:.85rem"
                 onchange="if(this.value) window.location=this.value">
             <option value="@Url.Action("Index")">All issues</option>
             @foreach (var view in issueViews)
