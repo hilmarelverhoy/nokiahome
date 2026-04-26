@@ -34,35 +34,21 @@
     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 }
 
-@* Custom views — stacked vertically *@
+@* Custom views — dropdown *@
 @if (issueViews.Any())
 {
-    <div class="mb-4">
-        <div class="text-muted small fw-medium mb-2" style="letter-spacing:.04em">VIEWS</div>
-        <div>
-            @* "All issues" to reset back to default list *@
-            <a asp-action="Index"
-               class="d-block text-decoration-none px-3 py-2 rounded border mb-1 @(!inView ? "bg-dark text-white border-dark" : "bg-white text-dark")"
-               style="font-size:.9rem">
-                All issues
-            </a>
+    <div class="mb-3">
+        <select class="form-select form-select-sm" style="width:auto;max-width:220px;font-size:.85rem"
+                onchange="if(this.value) window.location=this.value">
+            <option value="@Url.Action("Index")">All issues</option>
             @foreach (var view in issueViews)
             {
-                var isActive = Model.ActiveViewId == view.Id;
-                var dotColor = string.IsNullOrEmpty(view.Color) ? "#6c757d" : view.Color;
-                <a asp-action="Index" asp-route-viewId="@view.Id"
-                   class="d-block text-decoration-none px-3 py-2 rounded border mb-1 @(isActive ? "bg-dark text-white border-dark" : "bg-white text-dark")"
-                   style="font-size:.9rem"
-                   title="@view.Description">
-                    <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:@dotColor;vertical-align:middle;margin-right:.4rem"></span>
-                    @if (!string.IsNullOrEmpty(view.Icon))
-                    {
-                        <span style="vertical-align:middle">@view.Icon</span>
-                    }
-                    <span style="vertical-align:middle">@view.Name</span>
-                </a>
+                var url = Url.Action("Index", new { viewId = view.Id });
+                <option value="@url" selected="@(Model.ActiveViewId == view.Id)">
+                    @(!string.IsNullOrEmpty(view.Icon) ? view.Icon + " " : "")@view.Name
+                </option>
             }
-        </div>
+        </select>
     </div>
 }
 
