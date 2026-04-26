@@ -1,0 +1,82 @@
+@model NokiaHome.Models.Linear.CreateProjectViewModel
+@{
+    ViewData["Title"] = "New project";
+}
+
+<div class="mb-3">
+    <a asp-action="Projects" class="text-decoration-none text-muted small">&larr; Back to projects</a>
+</div>
+
+<h2 class="mb-4">New project</h2>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="CreateProject" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-medium">Name <span class="text-danger">*</span></label>
+                <input asp-for="Name" class="form-control" placeholder="Project name" required autofocus />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-medium">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="4"
+                          placeholder="What is this project about?"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Icon" class="form-label fw-medium">Icon <span class="text-muted fw-normal">(emoji)</span></label>
+                <input asp-for="Icon" class="form-control" placeholder="e.g. 🚀" maxlength="8" />
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Color" class="form-label fw-medium">Color</label>
+                <div>
+                    @foreach (var (hex, label) in new[] {
+                        ("#6c757d", "Grey"), ("#0d6efd", "Blue"), ("#198754", "Green"),
+                        ("#dc3545", "Red"), ("#ffc107", "Yellow"), ("#0dcaf0", "Cyan"),
+                        ("#fd7e14", "Orange"), ("#6f42c1", "Purple") })
+                    {
+                        <label style="display:inline-block;margin:0 4px 4px 0;cursor:pointer">
+                            <input type="radio" name="Color" value="@hex"
+                                   style="position:absolute;opacity:0;width:0;height:0" />
+                            <span class="color-swatch"
+                                  style="display:inline-block;width:28px;height:28px;border-radius:50%;background:@hex;border:2px solid transparent;vertical-align:middle"
+                                  title="@label"
+                                  onclick="selectColor('@hex', this)"></span>
+                        </label>
+                    }
+                    <input type="hidden" asp-for="Color" id="ColorInput" />
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-dark">Create project</button>
+                <a asp-action="Projects" class="btn btn-outline-secondary" style="margin-left:8px">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function selectColor(hex, el) {
+            document.querySelectorAll('.color-swatch').forEach(s => s.style.border = '2px solid transparent');
+            el.style.border = '2px solid #000';
+            document.getElementById('ColorInput').value = hex;
+        }
+        // Pre-select grey by default
+        (function () {
+            var first = document.querySelector('.color-swatch');
+            if (first) selectColor('#6c757d', first);
+        })();
+    </script>
+}

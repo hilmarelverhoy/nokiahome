@@ -60,5 +60,26 @@ namespace NokiaHome.Services
 
         /// <summary>Adds a comment to an existing issue.</summary>
         Task AddCommentAsync(string issueId, string body);
+
+        /// <summary>Updates an issue's title.</summary>
+        Task UpdateIssueTitleAsync(string issueId, string title);
+
+        /// <summary>Updates an issue's description (markdown).</summary>
+        Task UpdateIssueDescriptionAsync(string issueId, string? description);
+
+        /// <summary>Updates an issue's label set (replaces all labels).</summary>
+        Task UpdateIssueLabelsAsync(string issueId, List<string> labelIds);
+
+        /// <summary>Moves an issue to a different project (or removes it from projects when projectId is null).</summary>
+        Task UpdateIssueProjectAsync(string issueId, string? projectId);
+
+        /// <summary>Archives an issue (soft-delete).</summary>
+        Task ArchiveIssueAsync(string issueId);
+
+        /// <summary>Creates a new project.</summary>
+        Task<LinearProject> CreateProjectAsync(string name, string? description, string? color, string? icon);
+
+        /// <summary>Updates a project's state (planned, inProgress, paused, completed, cancelled).</summary>
+        Task UpdateProjectStateAsync(string projectId, string state);
     }
 }

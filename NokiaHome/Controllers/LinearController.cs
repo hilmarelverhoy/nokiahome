@@ -128,8 +128,9 @@ namespace NokiaHome.Controllers
             {
                 var statesTask = _linearService.GetStatesAsync();
                 var issueTask = _linearService.GetIssueAsync(id);
+                var projectsTask = _linearService.GetProjectsAsync();
 
-                await Task.WhenAll(statesTask, issueTask);
+                await Task.WhenAll(statesTask, issueTask, projectsTask);
 
                 if (issueTask.Result == null)
                 {
@@ -138,6 +139,7 @@ namespace NokiaHome.Controllers
                 }
 
                 ViewBag.States = statesTask.Result;
+                ViewBag.Projects = projectsTask.Result;
                 return View(issueTask.Result);
             }
             catch (Exception ex)
@@ -465,6 +467,181 @@ namespace NokiaHome.Controllers
                 ViewBag.ErrorMessage = $"Could not load project: {ex.Message}";
                 return View(new LinearProjectDetailViewModel());
             }
+        }
+
+        // GET /Linear/CreateProject
+        public IActionResult CreateProject()
+        {
+            return View(new CreateProjectViewModel());
+        }
+
+        // POST /Linear/CreateProject
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateProject(CreateProjectViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                var project = await _linearService.CreateProjectAsync(
+                    model.Name,
+                    model.Description,
+                    model.Color,
+                    model.Icon);
+
+                return RedirectToAction(nameof(ProjectDetail), new { id = project.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create project");
+                ViewBag.ErrorMessage = $"Could not create project: {ex.Message}";
+                return View(model);
+            }
+        }
+
+        // GET /Linear/EditIssue/{id}
+        public async Task<IActionResult> EditIssue(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return RedirectToAction(nameof(Index));
+
+            try
+            {
+                var issueTask = _linearService.GetIssueAsync(id);
+                var labelsTask = _linearService.GetLabelsAsync();
+                var projectsTask = _linearService.GetProjectsAsync();
+                await Task.WhenAll(issueTask, labelsTask, projectsTask);
+
+                var issue = issueTask.Result;
+                if (issue == null)
+                {
+                    ViewBag.ErrorMessage = "Issue not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(new EditIssueViewModel
+                {
+                    IssueId = issue.Id,
+                    Identifier = issue.Identifier,
+                    Title = issue.Title,
+                    Description = issue.Description,
+                    LabelIds = issue.Labels?.Nodes?.Select(l => l.Id).ToList() ?? new(),
+                    ProjectId = issue.Project?.Id,
+                    AvailableLabels = labelsTask.Result,
+                    AvailableProjects = projectsTask.Result
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load issue {IssueId} for editing", id);
+                ViewBag.ErrorMessage = $"Could not load issue: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // POST /Linear/EditIssue
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditIssue(EditIssueViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                try
+                {
+                    model.AvailableLabels = await _linearService.GetLabelsAsync();
+                    model.AvailableProjects = await _linearService.GetProjectsAsync();
+                }
+                catch { /* keep empty */ }
+                return View(model);
+            }
+
+            try
+            {
+                await _linearService.UpdateIssueTitleAsync(model.IssueId, model.Title);
+                await _linearService.UpdateIssueDescriptionAsync(model.IssueId, model.Description);
+                await _linearService.UpdateIssueLabelsAsync(model.IssueId, model.LabelIds);
+                await _linearService.UpdateIssueProjectAsync(model.IssueId, string.IsNullOrEmpty(model.ProjectId) ? null : model.ProjectId);
+
+                return RedirectToAction(nameof(Detail), new { id = model.IssueId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to edit issue {IssueId}", model.IssueId);
+                ViewBag.ErrorMessage = $"Could not save changes: {ex.Message}";
+                try
+                {
+                    model.AvailableLabels = await _linearService.GetLabelsAsync();
+                    model.AvailableProjects = await _linearService.GetProjectsAsync();
+                }
+                catch { /* keep empty */ }
+                return View(model);
+            }
+        }
+
+        // POST /Linear/MoveToProject
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MoveToProject(string issueId, string? projectId, string? returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(issueId))
+                return BadRequest();
+
+            try
+            {
+                await _linearService.UpdateIssueProjectAsync(issueId, string.IsNullOrEmpty(projectId) ? null : projectId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to move issue {IssueId} to project {ProjectId}", issueId, projectId);
+                TempData["ErrorMessage"] = $"Could not move issue: {ex.Message}";
+            }
+
+            return Redirect(returnUrl ?? Url.Action(nameof(Detail), new { id = issueId })!);
+        }
+
+        // POST /Linear/UpdateProjectState
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateProjectState(string projectId, string state, string? returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(state))
+                return BadRequest();
+
+            try
+            {
+                await _linearService.UpdateProjectStateAsync(projectId, state);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update project state for {ProjectId}", projectId);
+                TempData["ErrorMessage"] = $"Could not update project state: {ex.Message}";
+            }
+
+            return Redirect(returnUrl ?? Url.Action(nameof(ProjectDetail), new { id = projectId })!);
+        }
+
+        // POST /Linear/ArchiveIssue
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ArchiveIssue(string issueId, string? returnUrl = null)
+        {
+            if (string.IsNullOrEmpty(issueId))
+                return BadRequest();
+
+            try
+            {
+                await _linearService.ArchiveIssueAsync(issueId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to archive issue {IssueId}", issueId);
+                TempData["ErrorMessage"] = $"Could not archive issue: {ex.Message}";
+                return Redirect(returnUrl ?? Url.Action(nameof(Detail), new { id = issueId })!);
+            }
+
+            return Redirect(returnUrl ?? Url.Action(nameof(Index))!);
         }
     }
 }

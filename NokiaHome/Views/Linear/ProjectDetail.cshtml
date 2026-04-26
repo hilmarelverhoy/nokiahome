@@ -3,6 +3,7 @@
     ViewData["Title"] = Model.Project.Name.Length > 0 ? Model.Project.Name : "Project";
     var project = Model.Project;
     var dotColor = string.IsNullOrEmpty(project.Color) ? "#6c757d" : project.Color;
+    var allStates = new[] { "planned", "inProgress", "paused", "completed", "cancelled" };
 }
 
 <div class="mb-3">
@@ -13,9 +14,13 @@
 {
     <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
 }
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 
 @* Project header *@
-<div class="mb-4">
+<div class="mb-3">
     <div class="mb-1">
         <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:@dotColor;vertical-align:middle;margin-right:6px"></span>
         <span class="fw-semibold" style="font-size:1.4rem;vertical-align:middle">
@@ -43,6 +48,36 @@
         </div>
         <span class="text-muted small">@((int)(project.Progress.Value * 100))% complete</span>
     }
+</div>
+
+@* Change project state *@
+<div class="card mb-3">
+    <div class="card-body p-2">
+        <div class="text-muted mb-1" style="font-size:.7rem">Project state</div>
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+            @foreach (var s in allStates)
+            {
+                var label = s switch {
+                    "inProgress" => "In Progress",
+                    "completed"  => "Completed",
+                    "cancelled"  => "Cancelled",
+                    "paused"     => "Paused",
+                    "planned"    => "Planned",
+                    _ => s
+                };
+                var isActive = project.State == s;
+                <form asp-action="UpdateProjectState" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="projectId" value="@project.Id" />
+                    <input type="hidden" name="state" value="@s" />
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                    <button type="submit"
+                            class="btn btn-sm @(isActive ? "btn-dark" : "btn-outline-secondary")"
+                            style="font-size:.72rem">@label</button>
+                </form>
+            }
+        </div>
+    </div>
 </div>
 
 @* Issues list *@

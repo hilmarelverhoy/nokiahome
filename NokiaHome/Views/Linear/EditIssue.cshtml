@@ -1,0 +1,73 @@
+@model NokiaHome.Models.Linear.EditIssueViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.Identifier}";
+}
+
+<div class="mb-3">
+    <a asp-action="Detail" asp-route-id="@Model.IssueId" class="text-decoration-none text-muted small">&larr; Back to issue</a>
+</div>
+
+<div class="mb-3">
+    <span class="text-muted font-monospace" style="font-size:.75rem">@Model.Identifier</span>
+</div>
+
+<h2 class="mb-4">Edit issue</h2>
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+
+<div class="row">
+    <div class="col-lg-7">
+        <form asp-action="EditIssue" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="IssueId" type="hidden" />
+            <input asp-for="Identifier" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label fw-medium">Title <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-control" required autofocus />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-medium">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="6"
+                          placeholder="Markdown supported…"></textarea>
+            </div>
+
+            @if (Model.AvailableLabels.Any())
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Labels</label>
+                    <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+                        <partial name="_LabelPicker" model="@((Model.AvailableLabels, Model.LabelIds))" />
+                    </div>
+                </div>
+            }
+
+            <div class="mb-4">
+                <label asp-for="ProjectId" class="form-label fw-medium">Project</label>
+                <select asp-for="ProjectId" class="form-select form-select-sm">
+                    <option value="">— No project —</option>
+                    @foreach (var proj in Model.AvailableProjects)
+                    {
+                        <option value="@proj.Id" selected="@(Model.ProjectId == proj.Id)">
+                            @(!string.IsNullOrEmpty(proj.Icon) ? proj.Icon + " " : "")@proj.Name
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-dark">Save changes</button>
+                <a asp-action="Detail" asp-route-id="@Model.IssueId" class="btn btn-outline-secondary" style="margin-left:8px">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

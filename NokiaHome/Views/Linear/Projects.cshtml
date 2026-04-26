@@ -4,7 +4,10 @@
 }
 
 <div class="mb-3" style="overflow:hidden">
-    <a asp-action="Index" class="btn btn-sm btn-outline-secondary" style="float:right">&larr; Back to issues</a>
+    <div style="float:right;display:inline-flex;gap:.4rem">
+        <a asp-action="CreateProject" class="btn btn-sm btn-dark">+ New project</a>
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">&larr; Back to issues</a>
+    </div>
     <h2 class="mb-0">Projects</h2>
 </div>
 

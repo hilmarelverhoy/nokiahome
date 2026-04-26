@@ -124,12 +124,23 @@ namespace NokiaHome.Services
                       name
                       avatarUrl
                     }
-                    team {
-                      id
-                      name
-                      key
-                    }
-                    comments {
+                     team {
+                       id
+                       name
+                       key
+                     }
+                     labels {
+                       nodes {
+                         id
+                         name
+                         color
+                       }
+                     }
+                     project {
+                       id
+                       name
+                     }
+                     comments {
                       nodes {
                         id
                         body
@@ -401,6 +412,181 @@ namespace NokiaHome.Services
 
             if (!success)
                 _logger.LogWarning("AddComment returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task UpdateIssueTitleAsync(string issueId, string title)
+        {
+            const string mutation = """
+                mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+                  issueUpdate(id: $id, input: $input) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearMutationResponse>(
+                mutation,
+                new Dictionary<string, object?>
+                {
+                    ["id"] = issueId,
+                    ["input"] = new Dictionary<string, object?> { ["title"] = title }
+                });
+
+            var success = response?.Data?.IssueUpdate?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("UpdateIssueTitle returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task UpdateIssueDescriptionAsync(string issueId, string? description)
+        {
+            const string mutation = """
+                mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+                  issueUpdate(id: $id, input: $input) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearMutationResponse>(
+                mutation,
+                new Dictionary<string, object?>
+                {
+                    ["id"] = issueId,
+                    ["input"] = new Dictionary<string, object?> { ["description"] = description ?? "" }
+                });
+
+            var success = response?.Data?.IssueUpdate?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("UpdateIssueDescription returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task UpdateIssueLabelsAsync(string issueId, List<string> labelIds)
+        {
+            const string mutation = """
+                mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+                  issueUpdate(id: $id, input: $input) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearMutationResponse>(
+                mutation,
+                new Dictionary<string, object?>
+                {
+                    ["id"] = issueId,
+                    ["input"] = new Dictionary<string, object?> { ["labelIds"] = labelIds }
+                });
+
+            var success = response?.Data?.IssueUpdate?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("UpdateIssueLabels returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task UpdateIssueProjectAsync(string issueId, string? projectId)
+        {
+            const string mutation = """
+                mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) {
+                  issueUpdate(id: $id, input: $input) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearMutationResponse>(
+                mutation,
+                new Dictionary<string, object?>
+                {
+                    ["id"] = issueId,
+                    ["input"] = new Dictionary<string, object?> { ["projectId"] = projectId }
+                });
+
+            var success = response?.Data?.IssueUpdate?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("UpdateIssueProject returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task ArchiveIssueAsync(string issueId)
+        {
+            const string mutation = """
+                mutation IssueArchive($id: String!) {
+                  issueArchive(id: $id) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearArchiveMutationResponse>(
+                mutation,
+                new Dictionary<string, object?> { ["id"] = issueId });
+
+            var success = response?.Data?.IssueArchive?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("ArchiveIssue returned success=false for issue {IssueId}", issueId);
+        }
+
+        public async Task<LinearProject> CreateProjectAsync(
+            string name,
+            string? description,
+            string? color,
+            string? icon)
+        {
+            const string mutation = """
+                mutation ProjectCreate($input: ProjectCreateInput!) {
+                  projectCreate(input: $input) {
+                    success
+                    project {
+                      id
+                      name
+                      description
+                      color
+                      icon
+                      state
+                      progress
+                    }
+                  }
+                }
+                """;
+
+            var input = new Dictionary<string, object?>
+            {
+                ["name"] = name,
+                ["teamIds"] = new List<string> { _settings.TeamId }
+            };
+
+            if (!string.IsNullOrEmpty(description)) input["description"] = description;
+            if (!string.IsNullOrEmpty(color)) input["color"] = color;
+            if (!string.IsNullOrEmpty(icon)) input["icon"] = icon;
+
+            var response = await ExecuteQueryAsync<LinearProjectMutationResponse>(
+                mutation,
+                new Dictionary<string, object?> { ["input"] = input });
+
+            return response?.Data?.ProjectCreate?.Project
+                ?? throw new InvalidOperationException("Project creation failed: no project returned.");
+        }
+
+        public async Task UpdateProjectStateAsync(string projectId, string state)
+        {
+            const string mutation = """
+                mutation ProjectUpdate($id: String!, $input: ProjectUpdateInput!) {
+                  projectUpdate(id: $id, input: $input) {
+                    success
+                  }
+                }
+                """;
+
+            var response = await ExecuteQueryAsync<LinearProjectUpdateMutationResponse>(
+                mutation,
+                new Dictionary<string, object?>
+                {
+                    ["id"] = projectId,
+                    ["input"] = new Dictionary<string, object?> { ["state"] = state }
+                });
+
+            var success = response?.Data?.ProjectUpdate?.Success ?? false;
+            if (!success)
+                _logger.LogWarning("UpdateProjectState returned success=false for project {ProjectId}", projectId);
         }
 
         // -----------------------------------------------------------------------

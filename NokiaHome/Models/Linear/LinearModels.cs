@@ -96,6 +96,57 @@ namespace NokiaHome.Models.Linear
         public CommentMutationPayload? CommentCreate { get; set; }
     }
 
+    public class LinearArchiveMutationResponse
+    {
+        [JsonPropertyName("data")]
+        public ArchiveMutationData? Data { get; set; }
+    }
+
+    public class ArchiveMutationData
+    {
+        [JsonPropertyName("issueArchive")]
+        public SuccessPayload? IssueArchive { get; set; }
+    }
+
+    public class SuccessPayload
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+    }
+
+    public class LinearProjectMutationResponse
+    {
+        [JsonPropertyName("data")]
+        public ProjectMutationData? Data { get; set; }
+    }
+
+    public class ProjectMutationData
+    {
+        [JsonPropertyName("projectCreate")]
+        public ProjectMutationPayload? ProjectCreate { get; set; }
+    }
+
+    public class ProjectMutationPayload
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("project")]
+        public LinearProject? Project { get; set; }
+    }
+
+    public class LinearProjectUpdateMutationResponse
+    {
+        [JsonPropertyName("data")]
+        public ProjectUpdateMutationData? Data { get; set; }
+    }
+
+    public class ProjectUpdateMutationData
+    {
+        [JsonPropertyName("projectUpdate")]
+        public SuccessPayload? ProjectUpdate { get; set; }
+    }
+
     public class IssueMutationPayload
     {
         [JsonPropertyName("success")]
@@ -208,6 +259,9 @@ namespace NokiaHome.Models.Linear
 
         [JsonPropertyName("labels")]
         public LinearIssueLabelConnection? Labels { get; set; }
+
+        [JsonPropertyName("project")]
+        public LinearProject? Project { get; set; }
 
         // Computed display helpers
         public string PriorityBadgeClass => Priority switch
@@ -528,6 +582,26 @@ namespace NokiaHome.Models.Linear
         public List<string> LabelIds { get; set; } = new();
         public List<LinearWorkflowState> AvailableStates { get; set; } = new();
         public List<LinearIssueLabel> AvailableLabels { get; set; } = new();
+    }
+
+    public class EditIssueViewModel
+    {
+        public string IssueId { get; set; } = string.Empty;
+        public string Identifier { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public List<string> LabelIds { get; set; } = new();
+        public string? ProjectId { get; set; }
+        public List<LinearIssueLabel> AvailableLabels { get; set; } = new();
+        public List<LinearProject> AvailableProjects { get; set; } = new();
+    }
+
+    public class CreateProjectViewModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Color { get; set; }
+        public string? Icon { get; set; }
     }
 
     public class QuickCreateFormViewModel
