@@ -83,7 +83,7 @@ else
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="issueId" value="@Model.Id" />
                 <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                <select name="projectId" class="form-select form-select-sm" style="font-size:.75rem">
+                <select name="projectId" class="form-select form-select-sm" style="font-size:.75rem;width:auto;max-width:200px">
                     <option value="">— No project —</option>
                     @foreach (var proj in projects)
                     {
