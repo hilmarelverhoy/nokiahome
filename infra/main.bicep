@@ -1,5 +1,5 @@
 // NokiaHome — Azure infrastructure
-// App Service Plan (F1 Free, Windows) + Web App (.NET 9)
+// App Service Plan (F1 Free, Windows) + Web App (.NET 10) + Storage Account
 
 @description('Azure region for all resources.')
 param location string = 'norwayeast'
@@ -12,6 +12,12 @@ param webAppName string = 'nokiahome'
 
 @description('Value sent as ET-Client-Name header to the Entur APIs.')
 param enturClientName string = 'hilmarelverhoy-nokiajourneyplanner'
+
+@description('Name of the Azure Storage Account. Must be globally unique, 3-24 lowercase alphanumeric.')
+param storageAccountName string = 'stnokiahome'
+
+@description('Name of the blob container.')
+param blobContainerName string = 'blobs'
 
 // ---------------------------------------------------------------------------
 // App Service Plan — F1 Free tier (Windows, shared compute)
@@ -30,7 +36,7 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
 }
 
 // ---------------------------------------------------------------------------
-// Web App — ASP.NET Core MVC (.NET 9), framework-dependent deployment
+// Web App — ASP.NET Core MVC (.NET 10), framework-dependent deployment
 // ---------------------------------------------------------------------------
 resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   name: webAppName
@@ -57,6 +63,14 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }
+        {
+          name: 'BlobStorage__ConnectionString'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
+        }
+        {
+          name: 'BlobStorage__ContainerName'
+          value: blobContainerName
+        }
       ]
       // F1 does not support Always On — must be false
       alwaysOn: false
@@ -67,8 +81,39 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
 }
 
 // ---------------------------------------------------------------------------
+// Storage Account — Standard LRS, StorageV2, no public blob access
+// ---------------------------------------------------------------------------
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    allowBlobPublicAccess: false
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+  }
+}
+
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+  parent: storageAccount
+  name: 'default'
+}
+
+resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  parent: blobService
+  name: blobContainerName
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Outputs
 // ---------------------------------------------------------------------------
 output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 output webAppName string = webApp.name
 output resourceGroupName string = resourceGroup().name
+output storageAccountName string = storageAccount.name

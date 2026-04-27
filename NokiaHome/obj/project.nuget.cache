@@ -1,8 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "d3GBDa8WpDY=",
+  "dgSpecHash": "mD2l77/5XfE=",
   "success": true,
   "projectFilePath": "/Users/hilmar.elverhoy/nokiahome/NokiaHome/NokiaHome.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/hilmar.elverhoy/.nuget/packages/azure.core/1.50.0/azure.core.1.50.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/azure.storage.blobs/12.27.0/azure.storage.blobs.12.27.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/azure.storage.common/12.26.0/azure.storage.common.12.26.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/system.clientmodel/1.8.0/system.clientmodel.1.8.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/system.io.hashing/10.0.1/system.io.hashing.10.0.1.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg.sha512"
+  ],
   "logs": []
 }

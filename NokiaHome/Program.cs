@@ -13,6 +13,10 @@ builder.Services.AddHttpClient<NokiaHome.Services.IEnturGeocodingService, NokiaH
 builder.Services.Configure<LinearSettings>(builder.Configuration.GetSection("Linear"));
 builder.Services.AddHttpClient<NokiaHome.Services.ILinearService, NokiaHome.Services.LinearService>();
 
+// Blob storage — connection string supplied via BlobStorage__ConnectionString environment variable
+builder.Services.Configure<NokiaHome.Settings.BlobStorageSettings>(builder.Configuration.GetSection("BlobStorage"));
+builder.Services.AddScoped<NokiaHome.Services.IBlobStorageService, NokiaHome.Services.BlobStorageService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
