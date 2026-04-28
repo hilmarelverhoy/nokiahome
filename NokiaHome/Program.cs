@@ -17,6 +17,9 @@ builder.Services.AddHttpClient<NokiaHome.Services.ILinearService, NokiaHome.Serv
 builder.Services.Configure<NokiaHome.Settings.BlobStorageSettings>(builder.Configuration.GetSection("BlobStorage"));
 builder.Services.AddScoped<NokiaHome.Services.IBlobStorageService, NokiaHome.Services.BlobStorageService>();
 
+// Calendar
+builder.Services.AddScoped<NokiaHome.Services.ICalendarService, NokiaHome.Services.CalendarService>();
+
 // PDF processing
 builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
 builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHome.Services.PdfTextExtractionService>();
