@@ -17,6 +17,9 @@ builder.Services.AddHttpClient<NokiaHome.Services.ILinearService, NokiaHome.Serv
 builder.Services.Configure<NokiaHome.Settings.BlobStorageSettings>(builder.Configuration.GetSection("BlobStorage"));
 builder.Services.AddScoped<NokiaHome.Services.IBlobStorageService, NokiaHome.Services.BlobStorageService>();
 
+// PDF image extraction
+builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
