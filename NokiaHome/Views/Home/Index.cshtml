@@ -2,16 +2,59 @@
     ViewData["Title"] = "Home Page";
 }
 
-<header>
-    <p>
-        <a href="/" style="color: black; text-decoration: underline;">Home</a> | 
-        <a href="/Journey/From" style="color: black; text-decoration: underline;">Journey Planner</a> | 
-        <a href="/Linear" style="color: black; text-decoration: underline;">Issues</a> | 
-        <a href="/Blob" style="color: black; text-decoration: underline;">Blob</a> | 
-        <a href="/Home/Privacy" style="color: black; text-decoration: underline;">Privacy</a>
-    </p>
-</header>
-<div class="text-center">
+<div class="text-center mb-5">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="row g-3 justify-content-center">
+    <div class="col-sm-6 col-md-4">
+        <a href="/Journey/From" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Journey Planner</h5>
+                    <p class="card-text text-muted small">Search public transport routes.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <a href="/Linear" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Issues</h5>
+                    <p class="card-text text-muted small">Browse and manage Linear issues.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <a href="/Blob" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Blob Storage</h5>
+                    <p class="card-text text-muted small">Upload, download, and manage files.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <a href="/Calendar" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Calendar</h5>
+                    <p class="card-text text-muted small">Create events and share via iCal feed.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <a href="/Pdf" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">PDF Tools</h5>
+                    <p class="card-text text-muted small">Extract images from PDF files.</p>
+                </div>
+            </div>
+        </a>
+    </div>
 </div>
