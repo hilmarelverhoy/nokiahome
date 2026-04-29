@@ -48,6 +48,10 @@
             "Azure.Storage.Blobs": {
               "target": "Package",
               "version": "[12.27.0, )"
+            },
+            "UglyToad.PdfPig": {
+              "target": "Package",
+              "version": "[1.7.0-custom-5, )"
             }
           },
           "imports": [

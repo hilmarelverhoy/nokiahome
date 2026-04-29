@@ -24,6 +24,10 @@ builder.Services.AddScoped<NokiaHome.Services.ICalendarService, NokiaHome.Servic
 builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
 builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHome.Services.PdfTextExtractionService>();
 
+// Voice-to-calendar — OpenAI Whisper + GPT. API key supplied via OpenAi__ApiKey environment variable
+builder.Services.Configure<OpenAiSettings>(builder.Configuration.GetSection("OpenAi"));
+builder.Services.AddHttpClient<NokiaHome.Services.IVoiceEventService, NokiaHome.Services.VoiceEventService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

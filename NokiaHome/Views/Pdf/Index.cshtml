@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "PDF Tools";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">PDF Tools</h1>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        @success
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Info"] is string info)
+{
+    <div class="alert alert-info alert-dismissible" role="alert">
+        @info
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        @error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">Extract images from PDF</div>
+    <div class="card-body">
+        <p class="text-muted mb-3">Upload a PDF to download all embedded images as a ZIP archive.</p>
+        <form asp-action="ExtractImages" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <input type="file" name="file" accept=".pdf,application/pdf" class="form-control" required />
+                <button class="btn btn-primary" type="submit">Extract &amp; Download</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Store images from PDF to blob storage</div>
+    <div class="card-body">
+        <p class="text-muted mb-3">Upload a PDF to extract all embedded images and save them directly to blob storage.</p>
+        <form asp-action="StoreImages" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <input type="file" name="file" accept=".pdf,application/pdf" class="form-control" required />
+                <button class="btn btn-outline-primary" type="submit">Extract &amp; Store</button>
+            </div>
+        </form>
+    </div>
+</div>

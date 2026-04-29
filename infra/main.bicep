@@ -19,6 +19,17 @@ param storageAccountName string = 'stnokiahome'
 @description('Name of the blob container.')
 param blobContainerName string = 'blobs'
 
+@description('Linear API key. Pass via --parameters linearApiKey=<value> — never commit the value.')
+@secure()
+param linearApiKey string
+
+@description('Linear team ID.')
+param linearTeamId string
+
+@description('OpenAI API key. Pass via --parameters openAiApiKey=<value> — never commit the value.')
+@secure()
+param openAiApiKey string
+
 // ---------------------------------------------------------------------------
 // App Service Plan — F1 Free tier (Windows, shared compute)
 // ---------------------------------------------------------------------------
@@ -70,6 +81,30 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'BlobStorage__ContainerName'
           value: blobContainerName
+        }
+        {
+          name: 'Linear__ApiKey'
+          value: linearApiKey
+        }
+        {
+          name: 'Linear__TeamId'
+          value: linearTeamId
+        }
+        {
+          name: 'OpenAi__ApiKey'
+          value: openAiApiKey
+        }
+        {
+          name: 'OpenAi__Endpoint'
+          value: 'https://hilmar-slipper-foundry.openai.azure.com/'
+        }
+        {
+          name: 'OpenAi__WhisperDeployment'
+          value: 'whisper'
+        }
+        {
+          name: 'OpenAi__ChatDeployment'
+          value: 'gpt-4o-mini'
         }
       ]
       // F1 does not support Always On — must be false

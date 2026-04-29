@@ -27,6 +27,20 @@
 }
 
 <div class="card mb-4">
+    <div class="card-header">Add from voice recording</div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">Upload an audio file describing an event. It will be transcribed and pre-filled for you to review before saving.</p>
+        <form asp-action="VoiceCreate" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <input type="file" name="file" accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.flac" class="form-control" required />
+                <button class="btn btn-outline-primary" type="submit">Transcribe &amp; create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-4">
     <div class="card-header">New event</div>
     <div class="card-body">
         <form asp-action="Create" method="post">

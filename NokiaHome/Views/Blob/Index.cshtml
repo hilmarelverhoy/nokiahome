@@ -63,6 +63,14 @@
                         <td class="align-middle text-end text-nowrap">
                             <a asp-action="Download" asp-route-name="@blob.Name"
                                class="btn btn-sm btn-outline-secondary me-1">Download</a>
+                            @if (blob.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <form asp-action="Unzip" method="post" class="d-inline me-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="name" value="@blob.Name" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Unzip</button>
+                                </form>
+                            }
                             <form asp-action="Delete" method="post" class="d-inline"
                                   onsubmit="return confirm('Delete @blob.Name?')">
                                 @Html.AntiForgeryToken()

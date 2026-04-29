@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "mD2l77/5XfE=",
+  "dgSpecHash": "5KL0Pc5hX6s=",
   "success": true,
   "projectFilePath": "/Users/hilmar.elverhoy/nokiahome/NokiaHome/NokiaHome.csproj",
   "expectedPackageFiles": [
@@ -10,7 +10,12 @@
     "/Users/hilmar.elverhoy/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/system.clientmodel/1.8.0/system.clientmodel.1.8.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/system.io.hashing/10.0.1/system.io.hashing.10.0.1.nupkg.sha512",
-    "/Users/hilmar.elverhoy/.nuget/packages/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg.sha512"
+    "/Users/hilmar.elverhoy/.nuget/packages/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/uglytoad.pdfpig/1.7.0-custom-5/uglytoad.pdfpig.1.7.0-custom-5.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/uglytoad.pdfpig.core/1.7.0-custom-5/uglytoad.pdfpig.core.1.7.0-custom-5.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/uglytoad.pdfpig.fonts/1.7.0-custom-5/uglytoad.pdfpig.fonts.1.7.0-custom-5.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/uglytoad.pdfpig.tokenization/1.7.0-custom-5/uglytoad.pdfpig.tokenization.1.7.0-custom-5.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/uglytoad.pdfpig.tokens/1.7.0-custom-5/uglytoad.pdfpig.tokens.1.7.0-custom-5.nupkg.sha512"
   ],
   "logs": []
 }

@@ -104,6 +104,67 @@ public class BlobController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    // POST /Blob/Unzip
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Unzip(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest("Blob name is required.");
+
+        try
+        {
+            var (zipStream, _) = await _blobStorage.DownloadAsync(name);
+
+            using var archive = new System.IO.Compression.ZipArchive(zipStream, System.IO.Compression.ZipArchiveMode.Read);
+
+            var folder = Path.GetFileNameWithoutExtension(name);
+            var count = 0;
+
+            foreach (var entry in archive.Entries)
+            {
+                // Skip directory entries
+                if (string.IsNullOrEmpty(entry.Name))
+                    continue;
+
+                var blobName = $"{folder}/{entry.FullName}";
+                var contentType = GetContentType(entry.Name);
+
+                await using var entryStream = entry.Open();
+                using var ms = new MemoryStream();
+                await entryStream.CopyToAsync(ms);
+                ms.Position = 0;
+
+                await _blobStorage.UploadAsync(blobName, ms, contentType);
+                count++;
+            }
+
+            TempData["Success"] = $"Extracted {count} file(s) from \"{name}\" into \"{folder}/\".";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to unzip blob {Name}", name);
+            TempData["Error"] = $"Unzip failed: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    private static string GetContentType(string fileName) => Path.GetExtension(fileName).ToLowerInvariant() switch
+    {
+        ".png"  => "image/png",
+        ".jpg" or ".jpeg" => "image/jpeg",
+        ".gif"  => "image/gif",
+        ".webp" => "image/webp",
+        ".pdf"  => "application/pdf",
+        ".json" => "application/json",
+        ".txt"  => "text/plain",
+        ".csv"  => "text/csv",
+        ".html" => "text/html",
+        ".xml"  => "application/xml",
+        _       => "application/octet-stream",
+    };
+
     // ---------------------------------------------------------------------------
     // PDF pipeline
     // ---------------------------------------------------------------------------
