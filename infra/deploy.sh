@@ -93,9 +93,6 @@ az deployment group create \
   --name "$DEPLOYMENT_NAME" \
   --template-file "$SCRIPT_DIR/main.bicep" \
   --parameters "$SCRIPT_DIR/main.bicepparam" \
-  --parameters linearApiKey="$LINEAR_API_KEY" \
-               linearTeamId="$LINEAR_TEAM_ID" \
-               openAiApiKey="$OPENAI_API_KEY" \
   --output table
 
 # Capture outputs

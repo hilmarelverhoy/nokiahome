@@ -47,16 +47,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy Bicep infrastructure
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           az group create --name rg-nokiahome --location norwayeast
           az deployment group create \
             --resource-group rg-nokiahome \
             --name "nokiahome-${{ github.run_id }}" \
             --template-file infra/main.bicep \
-            --parameters infra/main.bicepparam \
-            --parameters linearApiKey="${{ secrets.LINEAR_API_KEY }}" \
-                         linearTeamId="${{ secrets.LINEAR_TEAM_ID }}" \
-                         openAiApiKey="${{ secrets.OPENAI_API_KEY }}"
+            --parameters infra/main.bicepparam
 
   deploy:
     runs-on: ubuntu-latest
