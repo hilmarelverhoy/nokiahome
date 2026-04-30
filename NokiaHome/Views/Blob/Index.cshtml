@@ -58,8 +58,6 @@
                 {
                     <tr>
                         <td class="align-middle">@blob.Name</td>
-                        <td class="align-middle text-nowrap">@FormatSize(blob.Properties.ContentLength)</td>
-                        <td class="align-middle text-nowrap">@blob.Properties.LastModified?.ToString("yyyy-MM-dd HH:mm")</td>
                         <td class="align-middle text-end text-nowrap">
                             <a asp-action="Download" asp-route-name="@blob.Name"
                                class="btn btn-sm btn-outline-secondary me-1">Download</a>
@@ -71,6 +69,11 @@
                                     <button type="submit" class="btn btn-sm btn-outline-primary">Unzip</button>
                                 </form>
                             }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle text-nowrap">@blob.Properties.LastModified?.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
                             <form asp-action="Delete" method="post" class="d-inline"
                                   onsubmit="return confirm('Delete @blob.Name?')">
                                 @Html.AntiForgeryToken()
@@ -78,6 +81,16 @@
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
+                        <td>
+                            @if (blob.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <form asp-action="Unzip" method="post" class="d-inline me-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="name" value="@blob.Name" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Unzip</button>
+                                </form>
+                            }
+                    </td>
                     </tr>
                 }
             </tbody>

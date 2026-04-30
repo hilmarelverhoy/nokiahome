@@ -107,6 +107,7 @@ namespace NokiaHome.Services
                 from: {" + fromLocation + @"}
                 to: {" + toLocation + @"}
                 alightSlackList: {slack: 10, modes: air}
+                dateTime: {"+DateTime.Now +@"}
               ) {
                 tripPatterns {
                   duration

@@ -1,0 +1,106 @@
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~*/
+~~
+    /*~~~~~~~~~~~~~*/ ~ /*~*/ /*~~~~~*/
+~
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Blob Storage</h1>
+</div>
+
+~~~ /*~~~~~~~~~~~~~~~~*/ ~~ /*~~*/ /*~~~~*/
+~
+    <div class="alert alert-success alert-dismissible" role="alert">
+        /*~~~~*/
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+~
+~~~ /*~~~~~~~~~~~~~~*/ ~~ /*~~*/ /*~~*/
+~
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        /*~~*/
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+~
+
+<div class="card mb-4">
+    <div class="card-header">Upload file</div>
+    <div class="card-body">
+        <form asp-action="Upload" method="post" enctype="multipart/form-data">
+            /*~~~~~~~~~~~~~~~~~~~~*/
+            <div class="input-group">
+                <input type="file" name="file" class="form-control" required />
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Files (/*~~~~~~~~*/)</div>
+    ~~~ /*~~~~~~~~*/ ~~ ~~
+    ~
+        <div class="card-body text-muted">No files uploaded yet.</div>
+    ~
+    /**/
+    ~
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Last modified</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                /*~~~~*/ /**/ /**/ ~~ /*~~*/
+                ~
+                    <tr>
+                        <td class="align-middle">/*~~~~~~*/</td>
+                        <td class="align-middle text-end text-nowrap">
+                            <a asp-action="Download" asp-route-name="/*~~~~~~*/"
+                               class="btn btn-sm btn-outline-secondary me-1">Download</a>
+                            ~~~ /*~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+                            ~
+                                <form asp-action="Unzip" method="post" class="d-inline me-1">
+                                    /*~~~~~~~~~~~~~~~~~~~~*/
+                                    <input type="hidden" name="name" value="/*~~~~~~*/" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Unzip</button>
+                                </form>
+                            ~
+                            <form asp-action="Delete" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete /*~~~~~~*/?')">
+                                /*~~~~~~~~~~~~~~~~~~~~*/
+                                <input type="hidden" name="name" value="/*~~~~~~*/" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle text-nowrap">/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~~*/</td>
+                        <
+                            <form asp-action="Delete" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete /*~~~~~~*/?')">
+                                /*~~~~~~~~~~~~~~~~~~~~*/
+                                <input type="hidden" name="name" value="/*~~~~~~*/" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                ~
+            </tbody>
+        </table>
+    ~
+</div>
+
+/*~~~~~~*/ ~
+    /*~~*/ /*~~*/ /*~~~~~~~~~~~~*/ /*~~*/
+    ~
+        ~~ /*~~*/ ~~ /*~*/ /*~~*/ /**/
+        ~~ /*~~*/ ~ /*~*/ /*~~*/ /*~~~~~*/ ~~~
+        ~~ /*~~*/ ~ /**/ ~ /*~*/ /*~~*/ /*~~~~*/ ~ /*~~~~~~*/ /**/
+        /*~~*/ /*~~~~*/ ~ /*~~~*/ ~ /*~~~~~*/ /**/
+    ~
+~
+

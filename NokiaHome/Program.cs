@@ -20,6 +20,9 @@ builder.Services.AddScoped<NokiaHome.Services.IBlobStorageService, NokiaHome.Ser
 // Calendar
 builder.Services.AddScoped<NokiaHome.Services.ICalendarService, NokiaHome.Services.CalendarService>();
 
+// Journal
+builder.Services.AddScoped<NokiaHome.Services.IJournalService, NokiaHome.Services.JournalService>();
+
 // PDF processing
 builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
 builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHome.Services.PdfTextExtractionService>();

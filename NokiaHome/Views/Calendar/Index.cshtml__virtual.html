@@ -1,37 +1,37 @@
-@model NokiaHome.Models.CalendarIndexViewModel
-@{
-    ViewData["Title"] = "Calendar";
-    var feedUrl = Url.Action("Feed", "Calendar", null, Context.Request.Scheme)!;
-}
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+~~
+    /*~~~~~~~~~~~~~*/ ~ /*~~~~~~~*/
+    ~~~ /*~~~*/ ~ /*~~~~~~~~~~~~~~*/ /*~~~~~~~*/ /*~*/ /*~~~~~~~~~~~~~~~~~~~~~*/
+~
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0">Calendar</h1>
-    <a href="@feedUrl" class="btn btn-sm btn-outline-secondary" title="Subscribe in any calendar app">
+    <a href="/*~~~~*/" class="btn btn-sm btn-outline-secondary" title="Subscribe in any calendar app">
         Subscribe (.ics)
     </a>
 </div>
 
-@if (TempData["Success"] is string success)
-{
+~~~ /*~~~~~~~~~~~~~~~~*/ ~~ /*~~*/ /*~~~~*/
+~
     <div class="alert alert-success alert-dismissible" role="alert">
-        @success
+        /*~~~~*/
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-}
-@if (TempData["Error"] is string error)
-{
+~
+~~~ /*~~~~~~~~~~~~~~*/ ~~ /*~~*/ /*~~*/
+~
     <div class="alert alert-danger alert-dismissible" role="alert">
-        @error
+        /*~~*/
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-}
+~
 
 <div class="card mb-4">
     <div class="card-header">Add from voice recording</div>
     <div class="card-body">
         <p class="text-muted small mb-3">Upload an audio file describing an event. It will be transcribed and pre-filled for you to review before saving.</p>
         <form asp-action="VoiceCreate" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
+            /*~~~~~~~~~~~~~~~~~~~~*/
             <div class="input-group">
                 <input type="file" name="file" accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.flac" class="form-control" required />
                 <button class="btn btn-outline-primary" type="submit">Transcribe &amp; create</button>
@@ -44,42 +44,42 @@
     <div class="card-header">New event</div>
     <div class="card-body">
         <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
+            /*~~~~~~~~~~~~~~~~~~~~*/
 
             <div class="row g-3">
                 <div class="col-12">
-                    <label asp-for="Form.Title" class="form-label">Title <span class="text-danger">*</span></label>
-                    <input asp-for="Form.Title" class="form-control" placeholder="Event title" />
-                    <span asp-validation-for="Form.Title" class="text-danger small"></span>
+                    <label asp-for="/*~~~~~~*/" class="form-label">Title <span class="text-danger">*</span></label>
+                    <input asp-for="/*~~~~~~*/" class="form-control" placeholder="Event title" />
+                    <span asp-validation-for="/*~~~~~~*/" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="Form.Start" class="form-label">Start <span class="text-danger">*</span></label>
-                    <input asp-for="Form.Start" type="datetime-local" class="form-control" />
-                    <span asp-validation-for="Form.Start" class="text-danger small"></span>
+                    <label asp-for="/*~~~~~~*/" class="form-label">Start <span class="text-danger">*</span></label>
+                    <input asp-for="/*~~~~~~*/" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="/*~~~~~~*/" class="text-danger small"></span>
                 </div>
 
                 <div class="col-md-6" id="end-field">
-                    <label asp-for="Form.End" class="form-label">End <span class="text-danger">*</span></label>
-                    <input asp-for="Form.End" type="datetime-local" class="form-control" />
-                    <span asp-validation-for="Form.End" class="text-danger small"></span>
+                    <label asp-for="/*~~~~*/" class="form-label">End <span class="text-danger">*</span></label>
+                    <input asp-for="/*~~~~*/" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="/*~~~~*/" class="text-danger small"></span>
                 </div>
 
                 <div class="col-12">
                     <div class="form-check">
-                        <input asp-for="Form.AllDay" class="form-check-input" id="allDayCheck" />
+                        <input asp-for="/*~~~~~~~*/" class="form-check-input" id="allDayCheck" />
                         <label class="form-check-label" for="allDayCheck">All-day event</label>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="Form.Location" class="form-label">Location</label>
-                    <input asp-for="Form.Location" class="form-control" placeholder="Optional" />
+                    <label asp-for="/*~~~~~~~~~*/" class="form-label">Location</label>
+                    <input asp-for="/*~~~~~~~~~*/" class="form-control" placeholder="Optional" />
                 </div>
 
                 <div class="col-12">
-                    <label asp-for="Form.Description" class="form-label">Description</label>
-                    <textarea asp-for="Form.Description" class="form-control" rows="2" placeholder="Optional"></textarea>
+                    <label asp-for="/*~~~~~~~~~~~~*/" class="form-label">Description</label>
+                    <textarea asp-for="/*~~~~~~~~~~~~*/" class="form-control" rows="2" placeholder="Optional"></textarea>
                 </div>
 
                 <div class="col-12">
@@ -92,20 +92,20 @@
 
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Upcoming events (@Model.Events.Count)</span>
-        <br>
+        <span>Upcoming events (/*~~~~~~~~~~~~~~~*/)</span>
+        <
         <small class="text-muted">
             Feed URL:
-            <a href="@feedUrl" class="font-monospace text-decoration-none small">@feedUrl</a>
+            <a href="/*~~~~*/" class="font-monospace text-decoration-none small">/*~~~~*/</a>
         </small>
     </div>
 
-    @if (Model.Events.Count == 0)
-    {
+    ~~~ /*~~~~~~~~~~~~~~~*/ ~~ ~~
+    ~
         <div class="card-body text-muted">No events yet.</div>
-    }
-    else
-    {
+    ~
+    /**/
+    ~
         <table class="table table-hover mb-0">
             <thead class="table-light">
                 <tr>
@@ -115,38 +115,38 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var ev in Model.Events)
-                {
+                /*~~~~*/ /**/ ~~ ~~ /*~~~~~~~~~*/
+                ~
                     <tr>
                         <td class="align-middle">
-                            <strong>@ev.Title</strong>
-                            @if (!string.IsNullOrWhiteSpace(ev.Description))
-                            {
-                                <div class="text-muted small">@ev.Description</div>
-                            }
+                            <strong>/*~~~~~*/</strong>
+                            ~~~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+                            ~
+                                <div class="text-muted small">/*~~~~~~~~~~~*/</div>
+                            ~
                         </td>
-                        <td class="align-middle">@(ev.Location ?? "-")</td>
+                        <td class="align-middle">/*~~~~~~~~~*/ ~~ /**/</td>
                         <td class="align-middle text-end">
                             <form asp-action="Delete" method="post" class="d-inline"
-                                  onsubmit="return confirm('Delete &quot;@ev.Title&quot;?')">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@ev.Id" />
+                                  onsubmit="return confirm('Delete &quot;/*~~~~~*/&quot;?')">
+                                /*~~~~~~~~~~~~~~~~~~~~*/
+                                <input type="hidden" name="id" value="/*~~*/" />
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
                     </tr>
                     <tr>
                         <td class="align-middle text-nowrap">
-                            @(ev.AllDay ? ev.Start.ToString("yyyy-MM-dd") : ev.Start.ToString("yyyy-MM-dd HH:mm"))
+                            /*~~~~~~~*/ ~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~~~~~~~~~~~~~~~~*/ /*~~~~*/
                         </td>
                     </tr>
-                }
+                ~
             </tbody>
         </table>
-    }
+    ~
 </div>
 
-@section Scripts {
+/*~~~~*/ /*~~~*/ ~
     <partial name="_ValidationScriptsPartial" />
     <script>
         // Hide end field when all-day is checked
@@ -156,4 +156,5 @@
         allDay.addEventListener('change', syncEndField);
         syncEndField();
     </script>
-}
+~
+

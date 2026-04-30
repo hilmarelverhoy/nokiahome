@@ -1,0 +1,163 @@
+/*~~*/ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+~~
+    /*~~~~~~~~~~~~~*/ ~ /*~*/ ~~ /**/ ~ /*~~~~~~~~~~~~~~~~*/ ~ /*~~~~~~~~~~*/ ~ /*~~~~*/
+    ~~~ /*~~~~*/ ~ /*~~~~~~~~~~~~*/ ~~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~~ /*~~*/
+~
+
+<div class="mb-3">
+    <a asp-action="Index" class="text-decoration-none text-muted small">&larr; Back to issues</a>
+</div>
+
+~~~ /*~~~~~~~~~~~~~~~~~*/ ~~ /*~*/
+~
+    <div class="alert alert-danger">/*~~~~~~~~~~~~~~~~~*/</div>
+~
+
+~~~ /*~~*/ ~~ /*~*/
+~
+    <p class="text-muted">Issue not found.</p>
+~
+/**/
+~
+~~ /*~~*/ ~~
+<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">
+    <span class="text-muted font-monospace" style="font-size:.7rem">/*~~~~~~~~~~~~~*/</span>
+    <a href="/*~~~~~~*/" target="_blank" rel="noopener"
+       class="text-muted" style="font-size:.7rem" title="Open in Linear">↗</a>
+    <a asp-action="EditIssue" asp-route-id="/*~~~~~*/"
+       class="text-muted" style="font-size:.7rem;margin-left:auto" title="Edit issue">Edit</a>
+</div>
+<p class="fw-medium mb-2" style="font-size:.9rem">/*~~~~~~~~*/</p>
+
+~~ /*~~~~*/ ~~
+<dl class="mb-2" style="display:grid;grid-template-columns:auto 1fr;gap:.25rem .75rem">
+    <dt class="text-muted" style="font-size:.7rem">State</dt>
+    <dd class="mb-0">
+        <partial name="_StateBadge" model="/*~~~~~~~*/" />
+    </dd>
+    <dt class="text-muted" style="font-size:.7rem">Priority</dt>
+    <dd class="mb-0">
+        <span class="badge bg-/*~~~~~~~~~~~~~~~~~~~~~*/ text-dark" style="font-size:.65rem">/*~~~~~~~~~~~~~~~~*/</span>
+    </dd>
+    <dt class="text-muted" style="font-size:.7rem">Assignee</dt>
+    <dd class="mb-0" style="font-size:.7rem">/*~~~~~~~~~~~~~~~~~~*/ ~~ /**/</dd>
+    <dt class="text-muted" style="font-size:.7rem">Team</dt>
+    <dd class="mb-0" style="font-size:.7rem">/*~~~~~~~~~~~~~~*/ ~~ /**/</dd>
+    ~~~ /*~~~~~~~~~~*/ ~~ /*~*/
+    ~
+        <dt class="text-muted" style="font-size:.7rem">Project</dt>
+        <dd class="mb-0" style="font-size:.7rem">
+            <a asp-action="ProjectDetail" asp-route-id="/*~~~~~~~~~~~~~*/"
+               class="text-decoration-none">/*~~~~~~~~~~~~~~~*/</a>
+        </dd>
+    ~
+    ~~~ /*~~~~~~~~~~~~~~~~~~~~~~~*/ ~~ /*~*/
+    ~
+        <dt class="text-muted" style="font-size:.7rem">Labels</dt>
+        <dd class="mb-0">
+            /*~~~~*/ /**/ ~~~ ~~ /*~~~~~~~~~~~~~~~*/
+            ~
+                <span class="badge me-1" style="background:/*~~~~~~*/;font-size:.62rem">/*~~~~~*/</span>
+            ~
+        </dd>
+    ~
+    <dt class="text-muted" style="font-size:.7rem">Created</dt>
+    <dd class="mb-0" style="font-size:.7rem">/*~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~~~ /*~~*/</dd>
+    <dt class="text-muted" style="font-size:.7rem">Updated</dt>
+    <dd class="mb-0" style="font-size:.7rem">/*~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~~~ /*~~*/</dd>
+</dl>
+
+~~ /*~~*/ /*~~~~*/ ~~
+<partial name="_PriorityEditor" model="/*~*/" />
+
+~~ /*~~*/ /*~*/ ~~
+<partial name="_StateEditor" model="/*~*/" />
+
+~~ /**/ ~~ /*~~~*/ ~~
+~~~ /*~~~~~~~~~~~~*/
+~
+    <div class="card mb-2">
+        <div class="card-body p-2">
+            <div class="text-muted mb-1" style="font-size:.7rem">Move to project</div>
+            <form asp-action="MoveToProject" method="post" style="display:flex;gap:.4rem;align-items:center">
+                /*~~~~~~~~~~~~~~~~~~~~*/
+                <input type="hidden" name="issueId" value="/*~~~~~*/" />
+                <input type="hidden" name="returnUrl" value="/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/" />
+                <select name="projectId" class="form-select form-select-sm"
+                style="font-size:.75rem;width:i;max-width:200px">
+                    <option value="">— No project —</option>
+                    /*~~~~*/ /**/ /**/ ~~ /*~~~~~*/
+                    ~
+                        <option value="/*~~~~*/">
+                            /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~ /*~~~~~*/ ~ ~ ~ ~ /*~~~~~~~~~*/
+                        </option>
+                    ~
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-secondary" style="font-size:.75rem;white-space:nowrap">Move</button>
+            </form>
+        </div>
+    </div>
+~
+
+~~ /*~~~~~~~*/ ~~
+~~~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+~
+    <div class="card mb-2">
+        <div class="card-body p-2">
+            <div class="text-muted mb-1" style="font-size:.7rem">Description</div>
+            <div style="white-space:pre-wrap;font-size:.8rem">/*~~~~~~~~~~~~~~*/</div>
+        </div>
+    </div>
+~
+
+~~ /*~~~~*/ ~~
+~~~ /*~~~~*/ ~ /*~~~~~~~~~~~~~~~~~*/ ~~ ~~~ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+<div class="text-muted mb-1" style="font-size:.7rem">Comments (/*~~~~~~~~~~~*/)</div>
+~~~ /*~~~~~~~~~~~~~*/
+~
+    <p class="text-muted" style="font-size:.75rem">No comments yet.</p>
+~
+/**/
+~
+    /*~~~~*/ /**/ /*~~~*/ ~~ /*~~~~~*/
+    ~
+        <div class="card mb-1">
+            <div class="card-body p-2">
+                <div class="fw-medium" style="font-size:.75rem">/*~~~~~~~~~~~~~~~~*/ ~~ /*~~~~~~*/</div>
+                <div class="text-muted" style="font-size:.65rem">/*~~~~~~~~~~~~~~~~~~~~~~~~~~~*/ ~~~ /**/ /*~~~*/</div>
+                <div class="mt-1" style="white-space:pre-wrap;font-size:.8rem">/*~~~~~~~~~*/</div>
+            </div>
+        </div>
+    ~
+~
+
+~~ ~~~ /*~~~*/ ~~
+~~~ /*~~~~~~~~~~~~~~~~~~~~~*/ ~~ /*~*/
+~
+    <div class="alert alert-danger py-1 px-2 mt-2" style="font-size:.75rem">/*~~~~~~~~~~~~~~~~~~~~~*/</div>
+~
+<form asp-action="AddComment" method="post" class="mt-2">
+    /*~~~~~~~~~~~~~~~~~~~~*/
+    <input type="hidden" name="issueId" value="/*~~~~~*/" />
+    <div class="mb-1">
+        <textarea name="body" rows="3" class="form-control form-control-sm"
+                  placeholder="Add a comment…" style="font-size:.8rem;resize:vertical"></textarea>
+    </div>
+    <div style="display:flex;gap:.5rem;align-items:center">
+        <button type="submit" class="btn btn-sm btn-primary" style="font-size:.75rem">Add comment</button>
+    </div>
+</form>
+
+~~ /*~~~*/ ~~
+<div class="mt-4 pt-3" style="border-top:1px solid #dee2e6">
+    <form asp-action="ArchiveIssue" method="post"
+          onsubmit="return confirm('Archive this issue? It will be hidden from the default issue list.')">
+        /*~~~~~~~~~~~~~~~~~~~~*/
+        <input type="hidden" name="issueId" value="/*~~~~~*/" />
+        <input type="hidden" name="returnUrl" value="/*~~~~~~~~~~~~~~~~*/" />
+        <button type="submit" class="btn btn-sm btn-outline-danger" style="font-size:.75rem">Archive issue</button>
+    </form>
+</div>
+~
+
+
