@@ -109,3 +109,4 @@
 /Users/hilmar/NokiaHome/NokiaHome/obj/Debug/net9.0/compressed/cd4dyw92gu-lfo63xpvzp.gz
 /Users/hilmar/NokiaHome/NokiaHome/obj/Debug/net9.0/compressed/hf7kh2pc5t-lfo63xpvzp.gz
 /Users/hilmar/NokiaHome/NokiaHome/obj/Debug/net9.0/NokiaHome.csproj.Up2Date
+/Users/hilmar/NokiaHome/NokiaHome/bin/Debug/net9.0/SixLabors.ImageSharp.dll

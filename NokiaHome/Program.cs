@@ -31,6 +31,9 @@ builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHo
 builder.Services.Configure<OpenAiSettings>(builder.Configuration.GetSection("OpenAi"));
 builder.Services.AddHttpClient<NokiaHome.Services.IVoiceEventService, NokiaHome.Services.VoiceEventService>();
 
+// Image resizing
+builder.Services.AddScoped<NokiaHome.Services.IImageResizeService, NokiaHome.Services.ImageResizeService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

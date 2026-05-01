@@ -56,6 +56,29 @@
     </div>
 </div>
 
+<div class="card mb-4">
+    <div class="card-header">Transcribe audio</div>
+    <div class="card-body">
+        <form asp-action="Transcribe" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Audio file</label>
+                    <input type="file" name="AudioFile" accept="audio/*" class="form-control" required />
+                    <div class="form-text">Supports mp3, m4a, wav, webm, ogg, flac — transcribed via Whisper.</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Title (optional)</label>
+                    <input type="text" name="Title" class="form-control" placeholder="Leave blank to use filename" />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Transcribe & save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @if (Model.Entries.Count == 0)
 {
     <p class="text-muted">No entries yet.</p>
