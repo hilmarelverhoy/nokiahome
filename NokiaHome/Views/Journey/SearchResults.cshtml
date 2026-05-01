@@ -2,10 +2,12 @@
 @{
     ViewData["Title"] = "Search Results";
 
-    var searchType    = ViewBag.SearchType as string;
-    var fromCode      = ViewBag.FromCode as string;
-    var fromName      = ViewBag.FromName as string;
-    var isFromSearch  = searchType == "from";
+    var searchType        = ViewBag.SearchType as string;
+    var fromCode          = ViewBag.FromCode as string;
+    var fromName          = ViewBag.FromName as string;
+    var fromCoordinates   = ViewBag.FromCoordinates as string;
+    var isFromSearch      = searchType == "from";
+    var originHasStopCode = !string.IsNullOrEmpty(fromCode);
 }
 
 @* ── Context bar (destination search only) ─────────────────────────── *@
@@ -21,35 +23,63 @@
 {
     @foreach (var feature in Model.Features.Where(f => !string.IsNullOrEmpty(f.Properties?.Id)))
     {
-        @* Resolve whether this feature has a structured id or only coordinates *@
-        var hasValidId  = !string.IsNullOrEmpty(feature.Properties?.Id) && feature.Properties.Id.Contains(":");
-        var coordinates = feature.Geometry?.Coordinates != null && feature.Geometry.Coordinates.Length >= 2
+        var isValid       = feature.IsValidForJourney;
+        var hasValidId    = feature.HasStopPlaceId;
+        var coordinates   = feature.Geometry?.Coordinates != null && feature.Geometry.Coordinates.Length >= 2
             ? $"{feature.Geometry.Coordinates[0]},{feature.Geometry.Coordinates[1]}"
             : null;
+        var opacityClass  = isValid ? "" : "opacity-50";
 
-        <div class="border-bottom py-2">
+        <div class="border-bottom py-2 @opacityClass">
 
             @* Name + optional disambiguating label *@
             <div class="fw-medium text-truncate" style="font-size:.85rem">@feature.Properties?.Name</div>
             @if (!string.IsNullOrWhiteSpace(feature.Properties?.Label) && feature.Properties.Label != feature.Properties?.Name)
             {
-                <div class="text-muted text-truncate" style="font-size:.7rem">@feature.Properties.Label</div>
+                <div class="text-muted text-truncate" style="font-size:.7rem">@feature.Properties?.Label</div>
             }
 
-            @* Select button — url varies by id availability and search direction *@
-            @if (isFromSearch)
+            @if (!isValid)
             {
-                <a href="@(hasValidId
-                    ? Url.Action("To", new { fromCode = feature.Properties?.Id, fromName = feature.Properties?.Name })
-                    : Url.Action("To", new { fromName = feature.Properties?.Name, fromCoordinates = coordinates }))"
-                   class="btn btn-primary btn-sm w-100 mt-1" style="font-size:.75rem">Select as From</a>
+                <div class="text-danger fw-semibold" style="font-size:.7rem">
+                    <i class="bi bi-exclamation-triangle"></i> Not available for journey planning
+                </div>
+            }
+
+            @* Select button — route to GetTrip only when BOTH origin and destination have stop codes *@
+            @if (isValid)
+            {
+                @if (isFromSearch)
+                {
+                    <a href="@(hasValidId
+                        ? Url.Action("To", new { fromCode = feature.Properties?.Id, fromName = feature.Properties?.Name })
+                        : Url.Action("To", new { fromName = feature.Properties?.Name, fromCoordinates = coordinates }))"
+                       class="btn btn-primary btn-sm w-100 mt-1" style="font-size:.75rem">Select as From</a>
+                }
+                else
+                {
+                    @if (originHasStopCode && hasValidId)
+                    {
+                        <a href="@Url.Action("GetTrip", new { fromCode, toCode = feature.Properties?.Id })"
+                           class="btn btn-success btn-sm w-100 mt-1" style="font-size:.75rem">Select as Destination</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("GetTripWithCoordinates", new {
+                            fromCode = originHasStopCode ? fromCode : null,
+                            fromName = originHasStopCode ? null : fromName,
+                            fromCoordinates = originHasStopCode ? null : fromCoordinates,
+                            toCode = hasValidId ? feature.Properties?.Id : null,
+                            toName = hasValidId ? null : feature.Properties?.Name,
+                            toCoordinates = hasValidId ? null : coordinates
+                        })"
+                           class="btn btn-success btn-sm w-100 mt-1" style="font-size:.75rem">Select as Destination</a>
+                    }
+                }
             }
             else
             {
-                <a href="@(hasValidId
-                    ? Url.Action("GetTrip", new { fromCode, toCode = feature.Properties?.Id })
-                    : Url.Action("GetTripWithCoordinates", new { fromCode, fromName, toName = feature.Properties?.Name, toCoordinates = coordinates }))"
-                   class="btn btn-success btn-sm w-100 mt-1" style="font-size:.75rem">Select as Destination</a>
+                <button disabled class="btn btn-outline-secondary btn-sm w-100 mt-1" style="font-size:.75rem; cursor: not-allowed;">Not selectable</button>
             }
 
         </div>
@@ -69,7 +99,7 @@ else
     }
     else
     {
-        <a href="@Url.Action("To", new { fromCode, fromName })"
+        <a href="@Url.Action("To", new { fromCode, fromName, fromCoordinates })"
            class="text-decoration-none text-muted" style="font-size:.75rem">← Back</a>
     }
-</div>
+}

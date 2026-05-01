@@ -20,12 +20,32 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Blob/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQmxvYi9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Calendar/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsZW5kYXIvSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Calendar/VoiceConfirm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsZW5kYXIvVm9pY2VDb25maXJtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/hilmar/NokiaHome/NokiaHome/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/hilmar/NokiaHome/NokiaHome/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Journal/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSm91cm5hbC9EZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Journal/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSm91cm5hbC9JbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/hilmar/NokiaHome/NokiaHome/Views/Journey/From.cshtml]
@@ -46,6 +66,82 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/hilmar/NokiaHome/NokiaHome/Views/Journey/TripDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSm91cm5leS9UcmlwRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Journey/_LegCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSm91cm5leS9fTGVnQ2FyZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0NyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/CreateProject.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0NyZWF0ZVByb2plY3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/Debug.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0RlYnVnLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/Detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0RldGFpbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/EditIssue.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0VkaXRJc3N1ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0luZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/KjopCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL0tqb3BDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/ProjectDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL1Byb2plY3REZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/Projects.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL1Byb2plY3RzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/QuickCreate.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL1F1aWNrQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/QuickCreateForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL1F1aWNrQ3JlYXRlRm9ybS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/QuickCreateProject.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL1F1aWNrQ3JlYXRlUHJvamVjdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/_IssueRow.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL19Jc3N1ZVJvdy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/_LabelPicker.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL19MYWJlbFBpY2tlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/_PriorityEditor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL19Qcmlvcml0eUVkaXRvci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/_StateBadge.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL19TdGF0ZUJhZGdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Linear/_StateEditor.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTGluZWFyL19TdGF0ZUVkaXRvci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/hilmar/NokiaHome/NokiaHome/Views/Pdf/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvUGRmL0luZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/hilmar/NokiaHome/NokiaHome/Views/Shared/Error.cshtml]

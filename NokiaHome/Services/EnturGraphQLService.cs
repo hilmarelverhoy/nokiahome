@@ -69,6 +69,8 @@ namespace NokiaHome.Services
                 variables.Add("$toLng: Float!");
             }
 
+            variables.Add("$dateTime: DateTime");
+
             var variableDeclarations = string.Join(", ", variables);
 
             // Build from location
@@ -107,7 +109,7 @@ namespace NokiaHome.Services
                 from: {" + fromLocation + @"}
                 to: {" + toLocation + @"}
                 alightSlackList: {slack: 10, modes: air}
-                dateTime: {"+DateTime.Now +@"}
+                dateTime: $dateTime
               ) {
                 tripPatterns {
                   duration
@@ -183,6 +185,7 @@ namespace NokiaHome.Services
 
             // Build variables object with only the variables we declared
             var variablesDict = new Dictionary<string, object?>();
+            variablesDict["dateTime"] = DateTime.Now.ToString("o"); // ISO 8601 format
             
             if (useFromCode) variablesDict["fromCode"] = fromCode;
             if (useFromCoords)
@@ -190,6 +193,165 @@ namespace NokiaHome.Services
                 variablesDict["fromName"] = fromName;
                 variablesDict["fromLat"] = fromCoordinates![1]; // latitude is second
                 variablesDict["fromLng"] = fromCoordinates![0]; // longitude is first
+            }
+            if (useToCode) variablesDict["toCode"] = toCode;
+            if (useToCoords)
+            {
+                variablesDict["toName"] = toName;
+                variablesDict["toLat"] = toCoordinates![1];
+                variablesDict["toLng"] = toCoordinates![0];
+            }
+
+            return await ExecuteQueryAsync(query, variablesDict);
+        }
+
+        public async Task<string> GetTripPatternsAsync(
+            string? fromCode, string? fromName, double[]? fromCoordinates,
+            string? toCode, string? toName, double[]? toCoordinates,
+            DateTime dateTime)
+        {
+            var useFromCode = !string.IsNullOrEmpty(fromCode) && fromCode.Contains(":");
+            var useFromCoords = !useFromCode && !string.IsNullOrEmpty(fromName) && fromCoordinates?.Length >= 2;
+            var useToCode = !string.IsNullOrEmpty(toCode) && toCode.Contains(":");
+            var useToCoords = !useToCode && !string.IsNullOrEmpty(toName) && toCoordinates?.Length >= 2;
+
+            var variables = new List<string>();
+            if (useFromCode) variables.Add("$fromCode: String!");
+            if (useFromCoords)
+            {
+                variables.Add("$fromName: String!");
+                variables.Add("$fromLat: Float!");
+                variables.Add("$fromLng: Float!");
+            }
+            if (useToCode) variables.Add("$toCode: String!");
+            if (useToCoords)
+            {
+                variables.Add("$toName: String!");
+                variables.Add("$toLat: Float!");
+                variables.Add("$toLng: Float!");
+            }
+
+            variables.Add("$dateTime: DateTime");
+
+            var variableDeclarations = string.Join(", ", variables);
+
+            string fromLocation;
+            if (useFromCode)
+            {
+                fromLocation = "place: $fromCode";
+            }
+            else if (useFromCoords)
+            {
+                fromLocation = "name: $fromName, coordinates: {latitude: $fromLat, longitude: $fromLng}";
+            }
+            else
+            {
+                throw new ArgumentException("Invalid from location parameters");
+            }
+
+            string toLocation;
+            if (useToCode)
+            {
+                toLocation = "place: $toCode";
+            }
+            else if (useToCoords)
+            {
+                toLocation = "name: $toName, coordinates: {latitude: $toLat, longitude: $toLng}";
+            }
+            else
+            {
+                throw new ArgumentException("Invalid to location parameters");
+            }
+
+            string query = @"
+            query GetTripPatterns(" + variableDeclarations + @") {
+              trip(
+                from: {" + fromLocation + @"}
+                to: {" + toLocation + @"}
+                alightSlackList: {slack: 10, modes: air}
+                dateTime: $dateTime
+              ) {
+                tripPatterns {
+                  duration
+                  streetDistance
+                  legs {
+                    expectedStartTime
+                    expectedEndTime
+                    mode
+                    distance
+                    line {
+                      id
+                      publicCode
+                      name
+                      presentation {
+                        colour
+                        textColour
+                      }
+                      transportMode
+                      transportSubmode
+                      description
+                      branding {
+                        name
+                        image
+                        id
+                        description
+                        shortName
+                        url
+                      }
+                      notices {
+                        text
+                        publicCode
+                      }
+                      quays {
+                        name
+                        description
+                        stopType
+                      }
+                    }
+                    duration
+                    toPlace {
+                      name
+                      vertexType
+                    }
+                    fromEstimatedCall {
+                      actualArrivalTime
+                      actualDepartureTime
+                      aimedArrivalTime
+                      aimedDepartureTime
+                      date
+                      quay {
+                        description
+                        name
+                      }
+                    }
+                    fromPlace {
+                      name
+                      quay {
+                        description
+                        name
+                      }
+                    }
+                  }
+                  aimedEndTime
+                  walkTime
+                  waitingTime
+                  streetDistance
+                  expectedEndTime
+                  distance
+                  directDuration
+                }
+              }
+            }";
+
+            var variablesDict = new Dictionary<string, object?>();
+            variablesDict["dateTime"] = dateTime.ToString("o");
+            
+            if (useFromCode) variablesDict["fromCode"] = fromCode;
+            if (useFromCoords)
+            {
+                variablesDict["fromName"] = fromName;
+                variablesDict["fromLat"] = fromCoordinates![1];
+                variablesDict["fromLng"] = fromCoordinates![0];
             }
             if (useToCode) variablesDict["toCode"] = toCode;
             if (useToCoords)

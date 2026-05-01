@@ -9,5 +9,9 @@ namespace NokiaHome.Services
         Task<string> GetTripPatternsAsync(
             string? fromCode, string? fromName, double[]? fromCoordinates,
             string? toCode, string? toName, double[]? toCoordinates);
+        Task<string> GetTripPatternsAsync(
+            string? fromCode, string? fromName, double[]? fromCoordinates,
+            string? toCode, string? toName, double[]? toCoordinates,
+            DateTime dateTime);
     }
 }
