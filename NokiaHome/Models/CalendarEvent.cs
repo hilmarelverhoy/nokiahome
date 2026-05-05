@@ -40,8 +40,3 @@ public class CreateEventForm
     public bool AllDay { get; set; }
 }
 
-public class VoiceConfirmViewModel
-{
-    public string Transcription { get; init; } = string.Empty;
-    public CreateEventForm Form { get; init; } = new();
-}

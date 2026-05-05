@@ -27,9 +27,18 @@ builder.Services.AddScoped<NokiaHome.Services.IJournalService, NokiaHome.Service
 builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
 builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHome.Services.PdfTextExtractionService>();
 
-// Voice-to-calendar — OpenAI Whisper + GPT. API key supplied via OpenAi__ApiKey environment variable
+// OpenAI (Whisper + GPT) — API key supplied via OpenAi__ApiKey environment variable
 builder.Services.Configure<OpenAiSettings>(builder.Configuration.GetSection("OpenAi"));
-builder.Services.AddHttpClient<NokiaHome.Services.IVoiceEventService, NokiaHome.Services.VoiceEventService>();
+
+// Named HttpClient for all OpenAI calls made by the orchestrator
+builder.Services.AddHttpClient("OpenAi");
+
+// Hub-and-spoke voice agent architecture
+builder.Services.AddScoped<NokiaHome.Services.IVoiceLogService, NokiaHome.Services.VoiceLogService>();
+builder.Services.AddScoped<NokiaHome.Services.Agents.ISpecializedAgent, NokiaHome.Services.Agents.CalendarAgent>();
+builder.Services.AddScoped<NokiaHome.Services.Agents.ISpecializedAgent, NokiaHome.Services.Agents.JournalAgent>();
+builder.Services.AddScoped<NokiaHome.Services.Agents.ISpecializedAgent, NokiaHome.Services.Agents.LinearAgent>();
+builder.Services.AddScoped<NokiaHome.Services.Agents.IOrchestratorService, NokiaHome.Services.Agents.OrchestratorService>();
 
 var app = builder.Build();
 

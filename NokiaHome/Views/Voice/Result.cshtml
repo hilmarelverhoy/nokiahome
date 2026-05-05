@@ -1,0 +1,95 @@
+@model NokiaHome.Models.VoiceCommandLog
+@{
+    ViewData["Title"] = "Resultat";
+
+    string IntentLabel(string intent) => intent switch
+    {
+        var i when i.StartsWith("calendar") => "Kalender",
+        var i when i.StartsWith("journal")  => "Dagbok",
+        var i when i.StartsWith("linear")   => "Linear",
+        "unknown"                           => "Ukjent",
+        "error"                             => "Feil",
+        _                                   => intent,
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Resultat</h1>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Ny kommando</a>
+</div>
+
+@* Transcript *@
+<div class="card mb-4">
+    <div class="card-header text-muted small">Hva Whisper hørte</div>
+    <div class="card-body">
+        <p class="mb-0 fst-italic text-muted">«@Model.Transcript»</p>
+    </div>
+</div>
+
+@* One card per action *@
+@for (var i = 0; i < Model.Actions.Count; i++)
+{
+    var action = Model.Actions[i];
+    var hasFeedback = action.FeedbackRating is not null;
+    var borderClass = !action.Success ? "border-warning"
+                    : hasFeedback     ? "border-secondary"
+                    :                   "border-success";
+
+    <div class="card mb-3 @borderClass">
+        <div class="card-body">
+
+            @* Header row *@
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="fw-semibold text-muted small">Handling @(i + 1) av @Model.Actions.Count</span>
+                <span class="badge bg-secondary">@IntentLabel(action.Intent)</span>
+                @if (!action.Success)
+                {
+                    <span class="badge bg-warning text-dark">Ikke utført</span>
+                }
+                @if (hasFeedback)
+                {
+                    <span class="badge @(action.FeedbackRating == "thumbs_up" ? "bg-success" : "bg-danger")">
+                        @(action.FeedbackRating == "thumbs_up" ? "👍" : "👎")
+                    </span>
+                }
+            </div>
+
+            @* Summary *@
+            <p class="mb-3">@action.ActionSummary</p>
+
+            @* Feedback — hidden once given *@
+            @if (!hasFeedback)
+            {
+                <form asp-action="Feedback" method="post" class="border-top pt-3">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="LogId"       value="@Model.Id" />
+                    <input type="hidden" name="ActionIndex" value="@i" />
+
+                    <div class="d-flex gap-2 align-items-start flex-wrap">
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="Rating" value="thumbs_up"
+                                    class="btn btn-sm btn-outline-success">
+                                👍 Stemmer
+                            </button>
+                            <button type="submit" name="Rating" value="thumbs_down"
+                                    class="btn btn-sm btn-outline-danger">
+                                👎 Feil
+                            </button>
+                        </div>
+                        <input type="text" name="Comment" class="form-control form-control-sm flex-fill"
+                               placeholder="Valgfri kommentar" maxlength="500" />
+                    </div>
+                </form>
+            }
+            else if (!string.IsNullOrWhiteSpace(action.FeedbackComment))
+            {
+                <p class="text-muted small mb-0 border-top pt-2">«@action.FeedbackComment»</p>
+            }
+
+        </div>
+    </div>
+}
+
+<div class="text-end mt-2">
+    <a asp-action="Index" class="btn btn-sm btn-link text-muted">Ny kommando</a>
+</div>

@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Talekommando";
+
+    var success    = TempData["Success"] as string;
+    var error      = TempData["Error"] as string;
+    var transcript = TempData["Transcript"] as string;
+    var intent     = TempData["Intent"] as string;
+    var message    = TempData["Message"] as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Talekommando</h1>
+</div>
+
+@if (error is not null)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        @error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (transcript is not null)
+{
+    var isSuccess = success == "true";
+    <div class="alert @(isSuccess ? "alert-success" : "alert-warning") alert-dismissible" role="alert">
+        <strong>@message</strong>
+        <div class="mt-1 text-muted small">
+            <span class="badge bg-secondary me-1">@intent</span>
+            &ldquo;@transcript&rdquo;
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">Send talekommando</div>
+    <div class="card-body">
+        <p class="text-muted small mb-3">
+            Last opp et lydopptak med en kommando på norsk. Systemet transkriberer og
+            utfører handlingen automatisk — kalender, dagbok eller prosjektstyring.
+            Hvis kommandoen ikke forstås, lagres opptaket som et dagboknotat.
+        </p>
+        <form asp-action="Command" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <input type="file"
+                       name="file"
+                       accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.flac"
+                       class="form-control"
+                       required />
+                <button class="btn btn-primary" type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+</div>

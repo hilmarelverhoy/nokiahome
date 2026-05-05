@@ -7,16 +7,13 @@ namespace NokiaHome.Controllers;
 public class CalendarController : Controller
 {
     private readonly ICalendarService _calendar;
-    private readonly IVoiceEventService _voiceEvent;
     private readonly ILogger<CalendarController> _logger;
 
     public CalendarController(
         ICalendarService calendar,
-        IVoiceEventService voiceEvent,
         ILogger<CalendarController> logger)
     {
         _calendar = calendar;
-        _voiceEvent = voiceEvent;
         _logger = logger;
     }
 
@@ -97,47 +94,11 @@ public class CalendarController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    /// <summary>
-    /// GET /Calendar/Feed
-    /// Returns an iCalendar (.ics) feed that can be subscribed to from any
-    /// calendar app (Google Calendar, Apple Calendar, Outlook, etc.).
-    /// </summary>
+    // GET /Calendar/Feed — iCalendar (.ics) subscription feed
     [HttpGet]
     public async Task<IActionResult> Feed()
     {
         var ical = await _calendar.GetICalFeedAsync();
         return Content(ical, "text/calendar", System.Text.Encoding.UTF8);
-    }
-
-    // POST /Calendar/VoiceCreate
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> VoiceCreate(IFormFile file)
-    {
-        if (file is null || file.Length == 0)
-        {
-            TempData["Error"] = "Please select an audio file.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        try
-        {
-            await using var stream = file.OpenReadStream();
-            var transcription = await _voiceEvent.TranscribeAsync(stream, file.FileName);
-
-            var form = await _voiceEvent.ParseEventAsync(transcription, DateTime.Now);
-
-            return View("VoiceConfirm", new VoiceConfirmViewModel
-            {
-                Transcription = transcription,
-                Form          = form,
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Voice event creation failed for {FileName}", file.FileName);
-            TempData["Error"] = $"Could not process recording: {ex.Message}";
-            return RedirectToAction(nameof(Index));
-        }
     }
 }
