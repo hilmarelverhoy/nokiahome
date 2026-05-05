@@ -24,3 +24,12 @@ public class CreateJournalEntryForm
     [MaxLength(100_000)]
     public string? Body { get; set; }
 }
+
+public class TranscribeJournalForm
+{
+    [Required]
+    public IFormFile? AudioFile { get; set; }
+
+    [MaxLength(300)]
+    public string? Title { get; set; }
+}

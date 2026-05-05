@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Image Resizer";
+}
+
+<h1 class="h3 mb-4">Image Resizer — QVGA (320×240)</h1>
+
+@if (TempData["Error"] is string error)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        @error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">Resize image</div>
+    <div class="card-body">
+        <form asp-action="Resize" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Image file</label>
+                    <input type="file" name="file" accept="image/*" class="form-control" required />
+                    <div class="form-text">Any common image format (PNG, JPEG, BMP, GIF, etc.).</div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label">JPEG quality (1–100)</label>
+                    <input type="number" name="quality" class="form-control" value="75" min="1" max="100" />
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Resize & download</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-3 text-muted small">
+    Images are resized to fit within 320×240 pixels (QVGA) while preserving aspect ratio, then saved as JPEG.
+</div>

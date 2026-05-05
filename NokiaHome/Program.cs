@@ -40,6 +40,9 @@ builder.Services.AddScoped<NokiaHome.Services.Agents.ISpecializedAgent, NokiaHom
 builder.Services.AddScoped<NokiaHome.Services.Agents.ISpecializedAgent, NokiaHome.Services.Agents.LinearAgent>();
 builder.Services.AddScoped<NokiaHome.Services.Agents.IOrchestratorService, NokiaHome.Services.Agents.OrchestratorService>();
 
+// Image resizing
+builder.Services.AddScoped<NokiaHome.Services.IImageResizeService, NokiaHome.Services.ImageResizeService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

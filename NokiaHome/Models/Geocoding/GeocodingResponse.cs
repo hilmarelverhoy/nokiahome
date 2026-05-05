@@ -102,6 +102,12 @@ namespace NokiaHome.Models.Geocoding
 
         [JsonPropertyName("properties")]
         public Properties? Properties { get; set; }
+
+        public bool IsValidForJourney => HasStopPlaceId || HasCoordinates;
+
+        public bool HasStopPlaceId => !string.IsNullOrEmpty(Properties?.Id) && Properties.Id.Contains(":");
+
+        public bool HasCoordinates => Geometry?.Coordinates != null && Geometry.Coordinates.Length >= 2;
     }
 
     public class Geometry

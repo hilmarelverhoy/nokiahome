@@ -109,3 +109,16 @@
 /Users/hilmar/NokiaHome/NokiaHome.Tests/obj/Debug/net9.0/NokiaHome.Tests.pdb
 /Users/hilmar/NokiaHome/NokiaHome.Tests/obj/Debug/net9.0/NokiaHome.Tests.genruntimeconfig.cache
 /Users/hilmar/NokiaHome/NokiaHome.Tests/obj/Debug/net9.0/ref/NokiaHome.Tests.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/Azure.Core.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/Azure.Storage.Blobs.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/Azure.Storage.Common.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/Microsoft.Bcl.AsyncInterfaces.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/System.ClientModel.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/System.IO.Hashing.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/System.Memory.Data.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/UglyToad.PdfPig.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/UglyToad.PdfPig.Core.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/UglyToad.PdfPig.Fonts.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/UglyToad.PdfPig.Tokenization.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/bin/Debug/net9.0/UglyToad.PdfPig.Tokens.dll
+/Users/hilmar/NokiaHome/NokiaHome.Tests/obj/Debug/net9.0/NokiaHome.Tests.sourcelink.json

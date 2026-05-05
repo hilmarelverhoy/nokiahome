@@ -7,11 +7,16 @@ namespace NokiaHome.Controllers;
 public class JournalController : Controller
 {
     private readonly IJournalService _journal;
+    private readonly IVoiceEventService _voice;
     private readonly ILogger<JournalController> _logger;
 
-    public JournalController(IJournalService journal, ILogger<JournalController> logger)
+    public JournalController(
+        IJournalService journal,
+        IVoiceEventService voice,
+        ILogger<JournalController> logger)
     {
         _journal = journal;
+        _voice = voice;
         _logger = logger;
     }
 
@@ -67,6 +72,45 @@ public class JournalController : Controller
         {
             _logger.LogError(ex, "Failed to save journal entry.");
             TempData["Error"] = $"Could not save entry: {ex.Message}";
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST /Journal/Transcribe
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Transcribe(TranscribeJournalForm form)
+    {
+        if (form.AudioFile is not { Length: > 0 })
+        {
+            ModelState.AddModelError(nameof(form.AudioFile), "Please upload an audio file.");
+            var entries = await _journal.GetEntriesAsync();
+            return View("Index", new JournalIndexViewModel { Entries = entries });
+        }
+
+        try
+        {
+            await using var audioStream = form.AudioFile.OpenReadStream();
+            var transcription = await _voice.TranscribeAsync(audioStream, form.AudioFile.FileName);
+
+            var title = string.IsNullOrWhiteSpace(form.Title)
+                ? Path.GetFileNameWithoutExtension(form.AudioFile.FileName)
+                : form.Title.Trim();
+
+            var entry = new JournalEntry
+            {
+                Title = title,
+                Body  = transcription.Trim(),
+            };
+
+            await _journal.AddEntryAsync(entry);
+            TempData["Success"] = $"\"{entry.Title}\" transcribed and saved.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to transcribe audio for journal.");
+            TempData["Error"] = $"Transcription failed: {ex.Message}";
         }
 
         return RedirectToAction(nameof(Index));

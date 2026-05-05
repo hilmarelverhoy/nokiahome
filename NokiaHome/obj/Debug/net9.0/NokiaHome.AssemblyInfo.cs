@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("976d11c0-2f1c-45a3-9584-6ab1be314a0a")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ccf36c8e4acadecf772dbbd783178a42a185f1e3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+99cb20ee2b9538762437bcdb6b6a8a289a227b64")]
 [assembly: System.Reflection.AssemblyProductAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
