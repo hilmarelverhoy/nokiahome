@@ -23,6 +23,9 @@ builder.Services.AddScoped<NokiaHome.Services.ICalendarService, NokiaHome.Servic
 // Journal
 builder.Services.AddScoped<NokiaHome.Services.IJournalService, NokiaHome.Services.JournalService>();
 
+// Voice transcription (thin Whisper wrapper used by JournalController)
+builder.Services.AddHttpClient<NokiaHome.Services.IVoiceEventService, NokiaHome.Services.VoiceEventService>();
+
 // PDF processing
 builder.Services.AddScoped<NokiaHome.Services.IPdfImageExtractionService, NokiaHome.Services.PdfImageExtractionService>();
 builder.Services.AddScoped<NokiaHome.Services.IPdfTextExtractionService, NokiaHome.Services.PdfTextExtractionService>();

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+99cb20ee2b9538762437bcdb6b6a8a289a227b64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef324081571144c984b47d4a09b5be4489126b73")]
 [assembly: System.Reflection.AssemblyProductAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NokiaHome")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
