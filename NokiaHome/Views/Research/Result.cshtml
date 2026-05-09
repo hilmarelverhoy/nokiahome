@@ -1,0 +1,70 @@
+@model NokiaHome.Models.Research.ResearchResult
+@{
+    ViewData["Title"] = "Research Result";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Research Result</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">New question</a>
+</div>
+
+<!-- Question -->
+<div class="card mb-4">
+    <div class="card-header text-muted small">Question</div>
+    <div class="card-body">
+        <p class="mb-0 fw-semibold">@Model.Question</p>
+    </div>
+</div>
+
+<!-- Final answer -->
+<div class="card mb-4 border-primary">
+    <div class="card-header bg-primary text-white">Answer</div>
+    <div class="card-body">
+        @foreach (var paragraph in Model.FinalAnswer.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            <p>@paragraph</p>
+        }
+    </div>
+</div>
+
+<!-- Sources -->
+@if (Model.Sources.Count > 0)
+{
+    <h2 class="h5 mb-3">Sources consulted</h2>
+    @foreach (var (source, index) in Model.Sources.Select((s, i) => (s, i + 1)))
+    {
+        <div class="card mb-3 @(source.Success ? "" : "border-warning")">
+            <div class="card-header d-flex justify-content-between align-items-start gap-2">
+                <div>
+                    <span class="badge bg-secondary me-1">@index</span>
+                    <a href="@source.Url" target="_blank" rel="noopener noreferrer"
+                       class="text-break small">@source.Url</a>
+                </div>
+                @if (source.Success)
+                {
+                    <span class="badge bg-success text-nowrap">OK</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark text-nowrap">Failed</span>
+                }
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-2"><em>@source.Rationale</em></p>
+                @if (source.Success)
+                {
+                    @foreach (var paragraph in source.Summary.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <p class="mb-1">@paragraph</p>
+                    }
+                }
+                else
+                {
+                    <p class="text-warning mb-0">@source.Error</p>
+                }
+            </div>
+        </div>
+    }
+}
+
+<div class="text-muted small mt-3">Researched at @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>

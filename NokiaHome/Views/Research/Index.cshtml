@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Research";
+    var error = TempData["Error"] as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Research</h1>
+</div>
+
+@if (error is not null)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        @error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form asp-action="Ask" method="post" enctype="multipart/form-data" id="researchForm">
+    @Html.AntiForgeryToken()
+
+    <div class="card mb-3">
+        <div class="card-header">Your question</div>
+        <div class="card-body">
+            <textarea name="question"
+                      id="questionField"
+                      class="form-control"
+                      rows="4"
+                      placeholder="Type your question here…"></textarea>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Or upload a voice recording</div>
+        <div class="card-body">
+            <p class="text-muted small mb-2">
+                Upload an audio file and it will be transcribed automatically.
+                If you also typed a question above, the typed text takes priority.
+            </p>
+            <input type="file"
+                   name="recording"
+                   id="recordingField"
+                   accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.flac"
+                   class="form-control mb-2" />
+            <div id="recordingName" class="text-muted small"></div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn">
+        <span id="submitLabel">Research</span>
+        <span id="submitSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+    </button>
+</form>
+
+@section Scripts {
+<script>
+document.getElementById('researchForm').addEventListener('submit', function () {
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitSpinner').classList.remove('d-none');
+    document.getElementById('submitLabel').textContent = 'Researching…';
+});
+
+document.getElementById('recordingField').addEventListener('change', function () {
+    const label = this.files.length > 0 ? this.files[0].name : '';
+    document.getElementById('recordingName').textContent = label;
+});
+</script>
+}

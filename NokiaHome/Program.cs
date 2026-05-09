@@ -46,6 +46,14 @@ builder.Services.AddScoped<NokiaHome.Services.Agents.IOrchestratorService, Nokia
 // Image resizing
 builder.Services.AddScoped<NokiaHome.Services.IImageResizeService, NokiaHome.Services.ImageResizeService>();
 
+// Research pipeline (transcribe → plan web requests → fetch → summarise → synthesise)
+builder.Services.AddHttpClient("Web", c =>
+{
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; NokiaHome/1.0)");
+    c.Timeout = TimeSpan.FromSeconds(15);
+});
+builder.Services.AddScoped<NokiaHome.Services.IResearchService, NokiaHome.Services.ResearchService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
