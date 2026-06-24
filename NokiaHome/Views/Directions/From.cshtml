@@ -1,0 +1,60 @@
+@using NokiaHome.Models.Directions
+@{
+    ViewData["Title"] = "Directions — From";
+    var savedPlaces = ViewBag.SavedPlaces as IReadOnlyList<SavedPlace> ?? [];
+}
+
+<div class="container mt-4">
+    <h2>Where are you travelling from?</h2>
+
+    @if (savedPlaces.Any())
+    {
+        <div class="mt-4">
+            <h5>Saved places</h5>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var place in savedPlaces)
+                {
+                    <a href="@Url.Action("To", new { origin = place.Name })"
+                       class="btn btn-primary">
+                        @place.Name
+                        @if (place.UseCount > 0)
+                        {
+                            <span class="badge bg-light text-dark ms-1">@place.UseCount</span>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <h5>@(savedPlaces.Any() ? "Or type a location" : "Type a location")</h5>
+        <form asp-action="To" method="get" class="d-flex gap-2">
+            <input type="text" name="origin" class="form-control" placeholder="Address or place name" required autofocus>
+            <button type="submit" class="btn btn-outline-primary">Next →</button>
+        </form>
+    </div>
+
+    @if (savedPlaces.Any())
+    {
+        <div class="mt-3">
+            <form asp-action="SavePlace" method="post" class="d-flex gap-2 align-items-center">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnAction" value="From">
+                <input type="text" name="name" class="form-control form-control-sm w-auto" placeholder="Save a new place…">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">+ Save</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="mt-4">
+            <form asp-action="SavePlace" method="post" class="d-flex gap-2 align-items-center">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnAction" value="From">
+                <input type="text" name="name" class="form-control form-control-sm w-auto" placeholder="Save a place for quick access…">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">+ Save</button>
+            </form>
+        </div>
+    }
+</div>

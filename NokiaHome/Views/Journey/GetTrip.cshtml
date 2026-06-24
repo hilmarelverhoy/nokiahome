@@ -34,7 +34,7 @@
         
         @foreach (var (tripPattern, index) in Model.Data.Trip.TripPatterns.Select((tp, i) => (tp, i)))
         {
-            <a href="@Url.Action("TripDetailsWithCoordinates", new { fromCode = ViewBag.FromCode, fromName = ViewBag.FromName, toCode = ViewBag.ToCode, toName = ViewBag.ToName, tripIndex = index })" class="text-decoration-none text-dark">
+            <a href="@Url.Action("TripDetailsWithCoordinates", new { fromCode = ViewBag.FromCode, fromName = ViewBag.FromName, fromCoordinates = ViewBag.FromCoordinates, toCode = ViewBag.ToCode, toName = ViewBag.ToName, toCoordinates = ViewBag.ToCoordinates, tripIndex = index })" class="text-decoration-none text-dark">
                 <div class="border mb-3" style="cursor: pointer;">
                     <div class="bg-light p-2">
                         <strong>Trip @(index + 1) - @tripPattern.FormattedDuration</strong>

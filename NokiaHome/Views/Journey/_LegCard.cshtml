@@ -92,6 +92,18 @@
             </div>
         </div>
 
+        @* Walking directions (foot legs only) *@
+        @if (Model.Mode == "foot" && Model.Steps?.Any() == true)
+        {
+            <h6>Walking Directions:</h6>
+            <ol class="mb-3">
+                @foreach (var step in Model.Steps)
+                {
+                    <li><small>@step.StreetName — @($"{step.Distance:F0}") m</small></li>
+                }
+            </ol>
+        }
+
         @* Service notices *@
         @if (Model.Line?.Notices?.Any() == true)
         {

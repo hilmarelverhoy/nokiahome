@@ -1,0 +1,54 @@
+@using NokiaHome.Models.Directions
+@{
+    ViewData["Title"] = "Directions — To";
+    var origin      = ViewBag.Origin as string;
+    var savedPlaces = ViewBag.SavedPlaces as IReadOnlyList<SavedPlace> ?? [];
+}
+
+<div class="container mt-4">
+    <div class="alert alert-light border mb-4">
+        <strong>From:</strong> @origin
+        <a href="@Url.Action("From")" class="ms-3 text-muted" style="font-size:.85rem">← Change</a>
+    </div>
+
+    <h2>Where are you travelling to?</h2>
+
+    @if (savedPlaces.Any())
+    {
+        <div class="mt-4">
+            <h5>Saved places</h5>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var place in savedPlaces)
+                {
+                    <a href="@Url.Action("Results", new { origin, destination = place.Name })"
+                       class="btn btn-success">
+                        @place.Name
+                        @if (place.UseCount > 0)
+                        {
+                            <span class="badge bg-light text-dark ms-1">@place.UseCount</span>
+                        }
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <h5>@(savedPlaces.Any() ? "Or type a location" : "Type a location")</h5>
+        <form asp-action="Results" method="get" class="d-flex gap-2">
+            <input type="hidden" name="origin" value="@origin">
+            <input type="text" name="destination" class="form-control" placeholder="Address or place name" required autofocus>
+            <button type="submit" class="btn btn-outline-success">Go</button>
+        </form>
+    </div>
+
+    <div class="mt-3">
+        <form asp-action="SavePlace" method="post" class="d-flex gap-2 align-items-center">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnAction" value="To">
+            <input type="hidden" name="returnOrigin" value="@origin">
+            <input type="text" name="name" class="form-control form-control-sm w-auto" placeholder="Save a new place…">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">+ Save</button>
+        </form>
+    </div>
+</div>

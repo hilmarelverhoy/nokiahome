@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 
 namespace NokiaHome.Services
@@ -7,12 +8,16 @@ namespace NokiaHome.Services
     public class EnturGraphQLService : IEnturGraphQLService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _cache;
         private readonly string _clientName;
         private const string GraphQLEndpoint = "https://api.entur.io/journey-planner/v3/graphql";
+        // ponytail: 2-min TTL; transit data goes stale fast, lower if needed
+        private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(2);
 
-        public EnturGraphQLService(HttpClient httpClient, IConfiguration configuration)
+        public EnturGraphQLService(HttpClient httpClient, IMemoryCache cache, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _cache = cache;
             _clientName = configuration["Entur:ClientName"] ?? "nokiahome-app";
             
             _httpClient.BaseAddress = new Uri(GraphQLEndpoint);
@@ -119,6 +124,12 @@ namespace NokiaHome.Services
                     expectedEndTime
                     mode
                     distance
+                    steps {
+                        stayOn
+                        streetName
+                        distance
+                        bogusName
+                    }
                     line {
                       id
                       publicCode
@@ -202,7 +213,13 @@ namespace NokiaHome.Services
                 variablesDict["toLng"] = toCoordinates![0];
             }
 
-            return await ExecuteQueryAsync(query, variablesDict);
+            var cacheKey = $"trip:{JsonSerializer.Serialize(variablesDict)}";
+            if (!_cache.TryGetValue(cacheKey, out string? cached))
+            {
+                cached = await ExecuteQueryAsync(query, variablesDict);
+                _cache.Set(cacheKey, cached, CacheTtl);
+            }
+            return cached!;
         }
 
         public async Task<string> GetTripPatternsAsync(
@@ -361,7 +378,13 @@ namespace NokiaHome.Services
                 variablesDict["toLng"] = toCoordinates![0];
             }
 
-            return await ExecuteQueryAsync(query, variablesDict);
+            var cacheKey = $"trip:{JsonSerializer.Serialize(variablesDict)}";
+            if (!_cache.TryGetValue(cacheKey, out string? cached))
+            {
+                cached = await ExecuteQueryAsync(query, variablesDict);
+                _cache.Set(cacheKey, cached, CacheTtl);
+            }
+            return cached!;
         }
     }
 }

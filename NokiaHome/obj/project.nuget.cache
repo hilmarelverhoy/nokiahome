@@ -1,13 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "Rg1wAkl1S1s=",
+  "dgSpecHash": "yhBIvbaRB14=",
   "success": true,
   "projectFilePath": "/Users/hilmar.elverhoy/nokiahome/NokiaHome/NokiaHome.csproj",
   "expectedPackageFiles": [
+    "/Users/hilmar.elverhoy/.nuget/packages/anthropic/12.22.0/anthropic.12.22.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/azure.core/1.50.0/azure.core.1.50.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/azure.storage.blobs/12.27.0/azure.storage.blobs.12.27.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/azure.storage.common/12.26.0/azure.storage.common.12.26.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/microsoft.bcl.asyncinterfaces/8.0.0/microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
+    "/Users/hilmar.elverhoy/.nuget/packages/microsoft.extensions.ai.abstractions/10.5.1/microsoft.extensions.ai.abstractions.10.5.1.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/sixlabors.imagesharp/3.1.12/sixlabors.imagesharp.3.1.12.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/system.clientmodel/1.8.0/system.clientmodel.1.8.0.nupkg.sha512",
     "/Users/hilmar.elverhoy/.nuget/packages/system.io.hashing/10.0.1/system.io.hashing.10.0.1.nupkg.sha512",

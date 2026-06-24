@@ -1,0 +1,126 @@
+@using NokiaHome.Models.Directions
+@model NokiaHome.Models.Directions.DirectionsResponse
+@{
+    ViewData["Title"] = "Directions";
+    var errorMessage = ViewBag.ErrorMessage as string;
+    var origin       = ViewBag.Origin as string;
+    var destination  = ViewBag.Destination as string;
+    var mode         = ViewBag.Mode as string ?? "driving";
+    var savedPlaces  = ViewBag.SavedPlaces as IReadOnlyList<SavedPlace> ?? [];
+}
+
+<div class="container mt-4">
+
+    @* ── Breadcrumb *@
+    <div class="alert alert-light border mb-4 d-flex justify-content-between align-items-center">
+        <span>
+            <a href="@Url.Action("From")" class="fw-semibold text-decoration-none">@origin</a>
+            <span class="text-muted mx-2">→</span>
+            <a href="@Url.Action("To", new { origin })" class="fw-semibold text-decoration-none">@destination</a>
+            <span class="badge bg-secondary ms-2">@System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(mode)</span>
+        </span>
+        <a href="@Url.Action("From")" class="btn btn-outline-secondary btn-sm">← New search</a>
+    </div>
+
+    @* ── Saved place chips — swap origin or destination *@
+    @if (savedPlaces.Any())
+    {
+        <div class="mb-4">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <span class="text-muted me-1" style="font-size:.8rem">From:</span>
+                @foreach (var place in savedPlaces)
+                {
+                    <a href="@Url.Action("Results", new { origin = place.Name, destination, mode })"
+                       class="btn btn-sm @(place.Name == origin ? "btn-primary" : "btn-outline-primary")">
+                        @place.Name
+                        @if (place.UseCount > 0){ <span class="badge bg-secondary ms-1">@place.UseCount</span> }
+                    </a>
+                }
+                <span class="text-muted mx-2" style="font-size:.8rem">To:</span>
+                @foreach (var place in savedPlaces)
+                {
+                    <a href="@Url.Action("Results", new { origin, destination = place.Name, mode })"
+                       class="btn btn-sm @(place.Name == destination ? "btn-success" : "btn-outline-success")">
+                        @place.Name
+                        @if (place.UseCount > 0){ <span class="badge bg-secondary ms-1">@place.UseCount</span> }
+                    </a>
+                }
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    else if (Model?.Routes?.Any() == true)
+    {
+        @foreach (var (route, ri) in Model.Routes.Select((r, i) => (r, i)))
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">
+                        @(Model.Routes.Count > 1 ? $"Option {ri + 1}" : "Route")
+                        @if (!string.IsNullOrEmpty(route.Summary))
+                        {
+                            <span class="fw-normal ms-1">via @route.Summary</span>
+                        }
+                    </span>
+                    @if (route.Legs?.Any() == true)
+                    {
+                        <span>
+                            @(route.Legs.FirstOrDefault()?.Duration?.Text ?? "")
+                            <span class="text-white-50 ms-2">@(route.Legs.FirstOrDefault()?.Distance?.Text ?? "")</span>
+                        </span>
+                    }
+                </div>
+
+                @foreach (var leg in route.Legs ?? [])
+                {
+                    <div class="card-body pb-0">
+                        <div class="d-flex justify-content-between text-muted mb-3" style="font-size:.85rem">
+                            <span>@leg.StartAddress</span>
+                            <span>→ @leg.EndAddress</span>
+                        </div>
+
+                        <ol class="ps-3">
+                            @foreach (var step in leg.Steps ?? [])
+                            {
+                                <li class="mb-2">
+                                    <div style="font-size:.9rem">@Html.Raw(step.HtmlInstructions)</div>
+                                    <div class="text-muted" style="font-size:.75rem">
+                                        @step.Distance?.Text
+                                        @if (step.Duration != null)
+                                        {
+                                            <span class="ms-2">· @step.Duration.Text</span>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+
+                        <div class="border-top pt-2 pb-3 d-flex gap-4 text-muted" style="font-size:.8rem">
+                            <span><strong class="text-dark">@leg.Duration?.Text</strong> total time</span>
+                            <span><strong class="text-dark">@leg.Distance?.Text</strong> total distance</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning">No routes found. Try adjusting the origin or destination.</div>
+    }
+
+    @* ── Mode switcher *@
+    <div class="mt-2 d-flex gap-2 flex-wrap">
+        @foreach (var m in new[] { "driving", "walking", "bicycling", "transit" })
+        {
+            <a href="@Url.Action("Results", new { origin, destination, mode = m })"
+               class="btn btn-sm @(mode == m ? "btn-primary" : "btn-outline-secondary")">
+                @System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(m)
+            </a>
+        }
+    </div>
+</div>

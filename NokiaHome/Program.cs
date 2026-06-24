@@ -4,10 +4,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 
 // Add HttpClient and Entur services
 builder.Services.AddHttpClient<NokiaHome.Services.IEnturGraphQLService, NokiaHome.Services.EnturGraphQLService>();
 builder.Services.AddHttpClient<NokiaHome.Services.IEnturGeocodingService, NokiaHome.Services.EnturGeocodingService>();
+
+// Directions saved places
+builder.Services.AddScoped<NokiaHome.Services.IDirectionsPlacesService, NokiaHome.Services.DirectionsPlacesService>();
+
+// Google Maps — API key supplied via GoogleMaps__Key environment variable
+builder.Services.Configure<NokiaHome.Settings.GoogleMapsSettings>(builder.Configuration.GetSection("GoogleMaps"));
+builder.Services.AddHttpClient<NokiaHome.Services.IGoogleMapsDirectionsService, NokiaHome.Services.GoogleMapsDirectionsService>();
 
 // Linear integration — API key supplied via Linear__ApiKey environment variable
 builder.Services.Configure<LinearSettings>(builder.Configuration.GetSection("Linear"));

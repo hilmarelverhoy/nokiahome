@@ -86,6 +86,9 @@ namespace NokiaHome.Models.Trip
         [JsonPropertyName("toPlace")]
         public Place? ToPlace { get; set; }
 
+        [JsonPropertyName("steps")]
+        public List<Step>? Steps { get; set; }
+
         [JsonPropertyName("fromEstimatedCall")]
         public EstimatedCall? FromEstimatedCall { get; set; }
 
@@ -192,6 +195,21 @@ namespace NokiaHome.Models.Trip
 
         [JsonPropertyName("stopType")]
         public string? StopType { get; set; }
+    }
+
+    public class Step
+    {
+        [JsonPropertyName("stayOn")]
+        public bool StayOn { get; set; }
+
+        [JsonPropertyName("streetName")]
+        public string? StreetName { get; set; }
+
+        [JsonPropertyName("distance")]
+        public double Distance { get; set; }
+
+        [JsonPropertyName("bogusName")]
+        public bool BogusName { get; set; }
     }
 
     public class EstimatedCall
