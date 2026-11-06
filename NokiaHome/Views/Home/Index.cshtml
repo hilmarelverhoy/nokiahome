@@ -8,6 +8,16 @@
 
 <div class="row g-3 justify-content-center">
     <div class="col-sm-6 col-md-4">
+        <a href="/Places/Search" class="text-decoration-none">
+            <div class="card h-100 text-center p-3">
+                <div class="card-body">
+                    <h5 class="card-title">Nearby Places</h5>
+                    <p class="card-text text-muted small">Search Google Places by location and type.</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-md-4">
         <a href="/Directions/From" class="text-decoration-none">
             <div class="card h-100 text-center p-3">
                 <div class="card-body">
@@ -88,3 +98,30 @@
         </a>
     </div>
 </div>
+
+<div class="text-center mt-4">
+    <button id="start-server" type="button" class="btn btn-primary me-2">Start server</button>
+    <button id="stop-server" type="button" class="btn btn-danger">Stop server</button>
+    <div id="server-status" class="small text-muted mt-2"></div>
+</div>
+
+@section Scripts {
+<script>
+    const webhooks = {
+        'start-server': { label: 'Start', url: 'https://831871c4-2248-4555-936c-1e58e7ccf43f.webhook.sec.azure-automation.net/webhooks?token=povWz1DKhDr4thXyzMHA29CnbUlt7oxxGQkbJ9hRtvw%3d' },
+        'stop-server':  { label: 'Stop',  url: 'https://831871c4-2248-4555-936c-1e58e7ccf43f.webhook.sec.azure-automation.net/webhooks?token=4Ni8PlFKAfwv3BhxbQLcTEFwt5p%2f5WU16L7RVFLT5Ws%3d' }
+    };
+    const status = document.getElementById('server-status');
+    for (const [id, hook] of Object.entries(webhooks)) {
+        document.getElementById(id).addEventListener('click', async () => {
+            status.textContent = hook.label + ' request in progress...';
+            try {
+                await fetch(hook.url, { method: 'POST', mode: 'no-cors' });
+                status.textContent = hook.label + ' request sent.';
+            } catch (e) {
+                status.textContent = 'Failed: ' + e.message;
+            }
+        });
+    }
+</script>
+}

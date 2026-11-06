@@ -1,0 +1,117 @@
+@using NokiaHome.Controllers
+@model NokiaHome.Models.Places.NearbySearchResponse
+@{
+    ViewData["Title"] = "Nearby Places Results";
+    double lat        = ViewBag.Lat;
+    double lng        = ViewBag.Lng;
+    double radius     = ViewBag.Radius;
+    string? types     = ViewBag.Types;
+    string? fields    = ViewBag.Fields;
+    int maxResults    = ViewBag.MaxResults;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Nearby Places</h2>
+        <a href="@Url.Action("Search")" class="btn btn-outline-secondary btn-sm">← New Search</a>
+    </div>
+
+    <div class="alert alert-light border mb-4 small">
+        <strong>@lat, @lng</strong> &nbsp;·&nbsp; radius <strong>@radius m</strong>
+        @if (!string.IsNullOrWhiteSpace(types))
+        {
+            <span>&nbsp;·&nbsp; types: <strong>@types</strong></span>
+        }
+        <span class="ms-3 text-muted">
+            Field mask: <code>@(string.IsNullOrWhiteSpace(fields) ? "(default)" : fields)</code>
+        </span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage as string))
+    {
+        <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
+    }
+
+    @if (Model?.Places is { Count: > 0 } places)
+    {
+        <p class="text-muted small mb-3">@places.Count result(s)</p>
+        <div class="row g-3">
+            @foreach (var place in places)
+            {
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title mb-1">
+                                @(place.DisplayName?.Text ?? place.Name ?? place.Id ?? "—")
+                            </h6>
+                            @if (!string.IsNullOrWhiteSpace(place.FormattedAddress))
+                            {
+                                <p class="text-muted small mb-2">@place.FormattedAddress</p>
+                            }
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                @if (!string.IsNullOrWhiteSpace(place.PrimaryTypeDisplayName?.Text))
+                                {
+                                    <span class="badge bg-secondary">@place.PrimaryTypeDisplayName.Text</span>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(place.PrimaryType))
+                                {
+                                    <span class="badge bg-secondary">@place.PrimaryType</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(place.BusinessStatus) && place.BusinessStatus != "OPERATIONAL")
+                                {
+                                    <span class="badge bg-warning text-dark">@place.BusinessStatus</span>
+                                }
+                                @if (place.Rating.HasValue)
+                                {
+                                    <span class="badge bg-success">★ @place.Rating.Value.ToString("F1")</span>
+                                }
+                                @if (place.PriceLevel is not null)
+                                {
+                                    var dollars = place.PriceLevel switch
+                                    {
+                                        "PRICE_LEVEL_FREE"            => "Free",
+                                        "PRICE_LEVEL_INEXPENSIVE"     => "$",
+                                        "PRICE_LEVEL_MODERATE"        => "$$",
+                                        "PRICE_LEVEL_EXPENSIVE"       => "$$$",
+                                        "PRICE_LEVEL_VERY_EXPENSIVE"  => "$$$$",
+                                        _ => place.PriceLevel
+                                    };
+                                    <span class="badge bg-light text-dark border">@dollars</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent d-flex gap-2 flex-wrap">
+                            @if (!string.IsNullOrWhiteSpace(place.Id))
+                            {
+                                <a href="@Url.Action("Details", new { placeId = place.Id })" class="btn btn-primary btn-sm">Details</a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(place.GoogleMapsUri))
+                            {
+                                <a href="@place.GoogleMapsUri" target="_blank" class="btn btn-outline-primary btn-sm">Maps</a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(place.WebsiteUri))
+                            {
+                                <a href="@place.WebsiteUri" target="_blank" class="btn btn-outline-secondary btn-sm">Website</a>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(place.NationalPhoneNumber))
+                            {
+                                <a href="tel:@place.NationalPhoneNumber" class="btn btn-outline-secondary btn-sm">@place.NationalPhoneNumber</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (string.IsNullOrWhiteSpace(ViewBag.ErrorMessage as string))
+    {
+        <div class="alert alert-info">No results returned.</div>
+    }
+
+    <div class="mt-4">
+        <a href="@Url.Action("Results", new { lat, lng, radius, types, fields, maxResults })"
+           class="btn btn-outline-secondary btn-sm">↻ Re-run</a>
+        &nbsp;
+        <a href="@Url.Action("Search")" class="btn btn-outline-secondary btn-sm">← New Search</a>
+    </div>
+</div>

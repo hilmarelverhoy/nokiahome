@@ -1,0 +1,346 @@
+@using NokiaHome.Controllers
+@model NokiaHome.Models.Places.Place
+@{
+    ViewData["Title"] = Model?.DisplayName?.Text ?? "Place Details";
+    string? placeId  = ViewBag.PlaceId;
+    string? fields   = ViewBag.Fields;
+    var detailsFieldOptions = (IReadOnlyList<(string Value, string Label, string Tier)>)ViewBag.DetailsFieldOptions;
+    var tiers = new[] { "IDs Only", "Essentials", "Pro", "Enterprise", "Enterprise+" };
+    var tierColors = new Dictionary<string, string>
+    {
+        ["IDs Only"]     = "dark",
+        ["Essentials"]   = "secondary",
+        ["Pro"]          = "info",
+        ["Enterprise"]   = "primary",
+        ["Enterprise+"]  = "warning"
+    };
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Place Details</h2>
+        <div class="d-flex gap-2">
+            <a href="@Url.Action("Search")" class="btn btn-outline-secondary btn-sm">← New Search</a>
+            <button class="btn btn-outline-secondary btn-sm" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#fieldMaskPanel">
+                Change fields
+            </button>
+        </div>
+    </div>
+
+    {{-- Field mask collapse panel --}}
+    <div class="collapse mb-4" id="fieldMaskPanel">
+        <div class="card card-body">
+            <form asp-action="Details" method="get" id="detailsForm">
+                <input type="hidden" name="placeId" value="@placeId" />
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-semibold small">Field Mask</span>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="selectEssentials">Essentials+Pro</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="selectAllD">Select all</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="selectNoneD">Clear</button>
+                    </div>
+                </div>
+                @foreach (var tier in tiers)
+                {
+                    <div class="mb-2">
+                        <div class="text-muted small mb-1">
+                            <span class="badge bg-@tierColors[tier] @(tier is "Enterprise+" or "Essentials" ? "text-dark" : "")">@tier</span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var (value, label, t) in detailsFieldOptions.Where(f => f.Tier == tier))
+                            {
+                                var isDefault = tier is "Essentials" or "Pro" or "Enterprise";
+                                <div class="form-check form-check-inline m-0">
+                                    <input class="form-check-input details-checkbox" type="checkbox"
+                                           id="df_@value.Replace(".", "_")"
+                                           data-tier="@t"
+                                           data-value="@value"
+                                           @(isDefault ? "checked" : "")>
+                                    <label class="form-check-label small" for="df_@value.Replace(".", "_")">@label</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <input type="hidden" name="fields" id="detailsFieldMaskInput" />
+                <div class="form-text mb-2">Mask: <code id="detailsFieldMaskPreview" class="text-muted small">—</code></div>
+                <button type="submit" class="btn btn-primary btn-sm">Re-fetch</button>
+            </form>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage as string))
+    {
+        <div class="alert alert-warning">@ViewBag.ErrorMessage</div>
+    }
+
+    @if (Model is not null)
+    {
+        <div class="row g-4">
+            {{-- Left column: identity + contact --}}
+            <div class="col-md-7">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title mb-1">@(Model.DisplayName?.Text ?? Model.Id ?? "—")</h4>
+
+                        @if (!string.IsNullOrWhiteSpace(Model.PrimaryTypeDisplayName?.Text))
+                        {
+                            <span class="badge bg-secondary mb-2">@Model.PrimaryTypeDisplayName.Text</span>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(Model.PrimaryType))
+                        {
+                            <span class="badge bg-secondary mb-2">@Model.PrimaryType</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.BusinessStatus) && Model.BusinessStatus != "OPERATIONAL")
+                        {
+                            <span class="badge bg-warning text-dark mb-2 ms-1">@Model.BusinessStatus</span>
+                        }
+
+                        @if (Model.Rating.HasValue)
+                        {
+                            <div class="mb-2">
+                                <span class="badge bg-success fs-6">★ @Model.Rating.Value.ToString("F1")</span>
+                                @if (Model.UserRatingCount.HasValue)
+                                {
+                                    <span class="text-muted small ms-1">(@Model.UserRatingCount.Value.ToString("N0") reviews)</span>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.PriceLevel is not null)
+                        {
+                            var dollars = Model.PriceLevel switch
+                            {
+                                "PRICE_LEVEL_FREE"           => "Free",
+                                "PRICE_LEVEL_INEXPENSIVE"    => "$",
+                                "PRICE_LEVEL_MODERATE"       => "$$",
+                                "PRICE_LEVEL_EXPENSIVE"      => "$$$",
+                                "PRICE_LEVEL_VERY_EXPENSIVE" => "$$$$",
+                                _ => Model.PriceLevel
+                            };
+                            <span class="badge bg-light text-dark border mb-2">@dollars</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.EditorialSummary?.Text))
+                        {
+                            <p class="text-muted mt-2 mb-0 fst-italic">@Model.EditorialSummary.Text</p>
+                        }
+                    </div>
+                </div>
+
+                {{-- Address --}}
+                @if (!string.IsNullOrWhiteSpace(Model.FormattedAddress))
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small">Address</div>
+                        <div class="card-body py-2">
+                            <p class="mb-1">@Model.FormattedAddress</p>
+                            @if (Model.PlusCode is not null)
+                            {
+                                <div class="text-muted small">Plus Code: <code>@(Model.PlusCode.CompoundCode ?? Model.PlusCode.GlobalCode)</code></div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                {{-- Contact --}}
+                @if (Model.NationalPhoneNumber is not null || Model.InternationalPhoneNumber is not null || Model.WebsiteUri is not null)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small">Contact</div>
+                        <div class="card-body py-2">
+                            @if (!string.IsNullOrWhiteSpace(Model.NationalPhoneNumber))
+                            {
+                                <div><a href="tel:@Model.NationalPhoneNumber">@Model.NationalPhoneNumber</a></div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.InternationalPhoneNumber) && Model.InternationalPhoneNumber != Model.NationalPhoneNumber)
+                            {
+                                <div class="text-muted small">@Model.InternationalPhoneNumber</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.WebsiteUri))
+                            {
+                                <div class="mt-1"><a href="@Model.WebsiteUri" target="_blank">@Model.WebsiteUri</a></div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                {{-- Opening hours --}}
+                @{
+                    var hours = Model.CurrentOpeningHours ?? Model.RegularOpeningHours;
+                }
+                @if (hours is not null)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small d-flex justify-content-between">
+                            <span>Opening Hours</span>
+                            @if (hours.OpenNow.HasValue)
+                            {
+                                <span class="badge @(hours.OpenNow.Value ? "bg-success" : "bg-danger")">
+                                    @(hours.OpenNow.Value ? "Open now" : "Closed now")
+                                </span>
+                            }
+                        </div>
+                        @if (hours.WeekdayDescriptions is { Count: > 0 })
+                        {
+                            <ul class="list-group list-group-flush small">
+                                @foreach (var day in hours.WeekdayDescriptions)
+                                {
+                                    <li class="list-group-item py-1">@day</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                }
+
+                {{-- Attributes chips --}}
+                @{
+                    var attrs = new List<string>();
+                    if (Model.Takeout == true)        attrs.Add("Takeout");
+                    if (Model.Delivery == true)       attrs.Add("Delivery");
+                    if (Model.DineIn == true)         attrs.Add("Dine-in");
+                    if (Model.CurbsidePickup == true) attrs.Add("Curbside pickup");
+                    if (Model.Reservable == true)     attrs.Add("Reservations");
+                    if (Model.OutdoorSeating == true) attrs.Add("Outdoor seating");
+                    if (Model.LiveMusic == true)      attrs.Add("Live music");
+                    if (Model.GoodForChildren == true)attrs.Add("Good for children");
+                    if (Model.GoodForGroups == true)  attrs.Add("Good for groups");
+                    if (Model.Restroom == true)       attrs.Add("Restroom");
+                    if (Model.AllowsDogs == true)     attrs.Add("Dogs allowed");
+                    if (Model.ServesBreakfast == true)attrs.Add("Breakfast");
+                    if (Model.ServesLunch == true)    attrs.Add("Lunch");
+                    if (Model.ServesDinner == true)   attrs.Add("Dinner");
+                    if (Model.ServesBrunch == true)   attrs.Add("Brunch");
+                    if (Model.ServesBeer == true)     attrs.Add("Beer");
+                    if (Model.ServesWine == true)     attrs.Add("Wine");
+                    if (Model.ServesCocktails == true)attrs.Add("Cocktails");
+                    if (Model.ServesCoffee == true)   attrs.Add("Coffee");
+                    if (Model.ServesDessert == true)  attrs.Add("Dessert");
+                    if (Model.ServesVegetarianFood == true) attrs.Add("Vegetarian");
+                }
+                @if (attrs.Count > 0)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small">Attributes</div>
+                        <div class="card-body py-2 d-flex flex-wrap gap-2">
+                            @foreach (var a in attrs)
+                            {
+                                <span class="badge bg-light text-dark border">@a</span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            {{-- Right column: links + reviews --}}
+            <div class="col-md-5">
+                <div class="d-flex flex-column gap-2 mb-3">
+                    @if (!string.IsNullOrWhiteSpace(Model.GoogleMapsUri))
+                    {
+                        <a href="@Model.GoogleMapsUri" target="_blank" class="btn btn-outline-primary">
+                            Open in Google Maps
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.WebsiteUri))
+                    {
+                        <a href="@Model.WebsiteUri" target="_blank" class="btn btn-outline-secondary">
+                            Visit Website
+                        </a>
+                    }
+                </div>
+
+                @if (Model.Location is not null)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small">Coordinates</div>
+                        <div class="card-body py-2 small font-monospace">
+                            @Model.Location.Latitude.ToString("F6"), @Model.Location.Longitude.ToString("F6")
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Types is { Count: > 0 })
+                {
+                    <div class="card mb-3">
+                        <div class="card-header fw-semibold small">All Types</div>
+                        <div class="card-body py-2 d-flex flex-wrap gap-1">
+                            @foreach (var t in Model.Types)
+                            {
+                                <span class="badge bg-light text-dark border small">@t</span>
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (Model.Reviews is { Count: > 0 })
+                {
+                    <h6 class="fw-semibold mt-3 mb-2">Reviews</h6>
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="card mb-2">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="small">@(review.AuthorAttribution?.DisplayName ?? "Anonymous")</strong>
+                                    <span class="text-muted small">@review.RelativePublishTimeDescription</span>
+                                </div>
+                                @if (review.Rating.HasValue)
+                                {
+                                    <div class="text-warning small mb-1">
+                                        @for (int i = 0; i < review.Rating.Value; i++) { <span>★</span> }
+                                        @for (int i = review.Rating.Value; i < 5; i++) { <span class="text-muted">★</span> }
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(review.Text?.Text))
+                                {
+                                    <p class="mb-0 small">@review.Text.Text</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+
+    <div class="mt-3 text-muted small">
+        Place ID: <code>@placeId</code>
+        @if (!string.IsNullOrWhiteSpace(fields))
+        {
+            <span class="ms-3">Mask: <code>@fields</code></span>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const checkboxes = document.querySelectorAll('.details-checkbox');
+    const preview    = document.getElementById('detailsFieldMaskPreview');
+    const hidden     = document.getElementById('detailsFieldMaskInput');
+
+    function updateMask() {
+        const selected = [...checkboxes].filter(c => c.checked).map(c => c.dataset.value);
+        const mask = selected.length ? selected.join(',') : '*';
+        hidden.value = mask;
+        preview.textContent = mask.length > 100 ? mask.slice(0, 100) + '…' : mask;
+    }
+
+    checkboxes.forEach(c => c.addEventListener('change', updateMask));
+
+    document.getElementById('selectEssentials').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = ['IDs Only','Essentials','Pro','Enterprise'].includes(c.dataset.tier));
+        updateMask();
+    });
+    document.getElementById('selectAllD').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = true);
+        updateMask();
+    });
+    document.getElementById('selectNoneD').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = false);
+        updateMask();
+    });
+
+    updateMask();
+</script>
+}

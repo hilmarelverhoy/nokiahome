@@ -1,0 +1,116 @@
+@using NokiaHome.Controllers
+@{
+    ViewData["Title"] = "Nearby Places";
+    var fieldOptions = (IReadOnlyList<(string Value, string Label, string Tier)>)ViewBag.FieldOptions;
+    var tiers = new[] { "Pro", "Enterprise", "Enterprise+" };
+    var tierColors = new Dictionary<string, string>
+    {
+        ["Pro"]          = "secondary",
+        ["Enterprise"]   = "primary",
+        ["Enterprise+"]  = "warning"
+    };
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Nearby Places Search</h2>
+        <a href="/" class="btn btn-outline-secondary btn-sm">← Home</a>
+    </div>
+
+    <form asp-action="Results" method="get">
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+                <label class="form-label fw-semibold">Latitude</label>
+                <input type="number" name="lat" step="any" class="form-control" placeholder="e.g. 59.9139" required />
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label fw-semibold">Longitude</label>
+                <input type="number" name="lng" step="any" class="form-control" placeholder="e.g. 10.7522" required />
+            </div>
+            <div class="col-sm-2">
+                <label class="form-label fw-semibold">Radius (m)</label>
+                <input type="number" name="radius" min="1" max="50000" value="500" class="form-control" required />
+            </div>
+            <div class="col-sm-2">
+                <label class="form-label fw-semibold">Max Results</label>
+                <input type="number" name="maxResults" min="1" max="20" value="20" class="form-control" />
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Place Types <span class="text-muted fw-normal small">(comma-separated, leave blank for all)</span></label>
+            <input type="text" name="types" class="form-control" placeholder="e.g. restaurant, cafe, bar" />
+            <div class="form-text">Uses <code>includedTypes</code>. See <a href="https://developers.google.com/maps/documentation/places/web-service/place-types" target="_blank">Table A</a> for valid values.</div>
+        </div>
+
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold">Field Mask</span>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="selectPro">Pro only</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="selectAll">Select all</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="selectNone">Clear</button>
+                </div>
+            </div>
+
+            @foreach (var tier in tiers)
+            {
+                <div class="mb-3">
+                    <div class="text-muted small mb-1">
+                        <span class="badge bg-@tierColors[tier] @(tier == "Enterprise+" ? "text-dark" : "")">@tier SKU</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var (value, label, t) in fieldOptions.Where(f => f.Tier == tier))
+                        {
+                            <div class="form-check form-check-inline m-0">
+                                <input class="form-check-input field-checkbox" type="checkbox"
+                                       id="f_@value.Replace(".", "_")"
+                                       data-tier="@t"
+                                       data-value="@value"
+                                       @(tier == "Pro" ? "checked" : "")>
+                                <label class="form-check-label small" for="f_@value.Replace(".", "_")">@label</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <input type="hidden" name="fields" id="fieldMaskInput" />
+            <div class="form-text mt-1">Resolved mask: <code id="fieldMaskPreview" class="text-muted">—</code></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search Nearby</button>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    const checkboxes = document.querySelectorAll('.field-checkbox');
+    const preview = document.getElementById('fieldMaskPreview');
+    const hidden = document.getElementById('fieldMaskInput');
+
+    function updateMask() {
+        const selected = [...checkboxes].filter(c => c.checked).map(c => c.dataset.value);
+        const mask = selected.length ? selected.join(',') : '*';
+        hidden.value = mask;
+        preview.textContent = mask.length > 120 ? mask.slice(0, 120) + '…' : mask;
+    }
+
+    checkboxes.forEach(c => c.addEventListener('change', updateMask));
+
+    document.getElementById('selectPro').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = c.dataset.tier === 'Pro');
+        updateMask();
+    });
+    document.getElementById('selectAll').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = true);
+        updateMask();
+    });
+    document.getElementById('selectNone').addEventListener('click', () => {
+        checkboxes.forEach(c => c.checked = false);
+        updateMask();
+    });
+
+    updateMask();
+</script>
+}

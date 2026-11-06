@@ -16,6 +16,7 @@ builder.Services.AddScoped<NokiaHome.Services.IDirectionsPlacesService, NokiaHom
 // Google Maps — API key supplied via GoogleMaps__Key environment variable
 builder.Services.Configure<NokiaHome.Settings.GoogleMapsSettings>(builder.Configuration.GetSection("GoogleMaps"));
 builder.Services.AddHttpClient<NokiaHome.Services.IGoogleMapsDirectionsService, NokiaHome.Services.GoogleMapsDirectionsService>();
+builder.Services.AddHttpClient<NokiaHome.Services.IGooglePlacesService, NokiaHome.Services.GooglePlacesService>();
 
 // Linear integration — API key supplied via Linear__ApiKey environment variable
 builder.Services.Configure<LinearSettings>(builder.Configuration.GetSection("Linear"));
