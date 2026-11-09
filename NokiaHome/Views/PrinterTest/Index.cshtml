@@ -1,0 +1,169 @@
+@{
+    ViewData["Title"] = "Printer Test";
+}
+
+<h1 class="h3 mb-4">Printer Test</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <label class="form-label">Sender key (X-Api-Key)</label>
+        <input id="apiKey" type="password" class="form-control" autocomplete="off" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Device key (X-Device-Key)</label>
+        <input id="deviceKey" type="password" class="form-control" autocomplete="off" />
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <h2 class="h5">Sender</h2>
+
+        <div class="card mb-3"><div class="card-body">
+            <h3 class="h6">Message</h3>
+            <textarea id="msgText" class="form-control mb-2" rows="3" maxlength="4000">Hello from NokiaHome</textarea>
+            <div class="d-flex gap-2 align-items-center mb-2">
+                <select id="msgAlign" class="form-select w-auto">
+                    <option>left</option><option>center</option><option>right</option>
+                </select>
+                <div class="form-check"><input id="msgBold" type="checkbox" class="form-check-input" /><label class="form-check-label" for="msgBold">Bold</label></div>
+                <input id="msgFeed" type="number" min="0" max="10" value="2" class="form-control" style="width:5rem" title="Feed" />
+            </div>
+            <button id="sendMsg" class="btn btn-primary btn-sm">Queue message</button>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+            <h3 class="h6">QR code</h3>
+            <div class="d-flex gap-2 mb-2">
+                <input id="qrText" class="form-control" value="https://nokiahome.azurewebsites.net" />
+                <input id="qrSize" type="number" min="21" max="384" value="300" class="form-control" style="width:6rem" />
+            </div>
+            <button id="sendQr" class="btn btn-primary btn-sm">Queue QR</button>
+        </div></div>
+
+        <div class="card mb-3"><div class="card-body">
+            <h3 class="h6">Image</h3>
+            <input id="imgFile" type="file" accept="image/*" class="form-control mb-2" />
+            <button id="sendImg" class="btn btn-primary btn-sm">Queue image</button>
+        </div></div>
+
+        <div class="card"><div class="card-body">
+            <h3 class="h6">Job status</h3>
+            <div class="input-group mb-2">
+                <input id="jobId" class="form-control" placeholder="job id" />
+                <button id="checkJob" class="btn btn-outline-secondary">Check</button>
+            </div>
+            <pre id="jobOut" class="mb-0 small"></pre>
+        </div></div>
+    </div>
+
+    <div class="col-lg-6">
+        <h2 class="h5">Device simulator</h2>
+        <div class="card"><div class="card-body">
+            <p class="small text-muted">Calls GET /api/printer/next (leases the job for 60 s), then ack.</p>
+            <button id="poll" class="btn btn-success btn-sm mb-2">Poll next</button>
+            <pre id="headers" class="small"></pre>
+            <pre id="textPreview" class="small border p-2 bg-light" style="display:none;max-width:384px;white-space:pre-wrap"></pre>
+            <canvas id="canvas" style="display:none;border:1px solid #ccc;max-width:100%"></canvas>
+            <div id="ackBtns" class="mt-2" style="display:none">
+                <button id="ackDone" class="btn btn-primary btn-sm">Ack done</button>
+                <button id="ackFail" class="btn btn-danger btn-sm">Ack failed</button>
+            </div>
+        </div></div>
+        <pre id="log" class="small mt-3"></pre>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const $ = id => document.getElementById(id);
+    ['apiKey', 'deviceKey'].forEach(k => {
+        $(k).value = sessionStorage.getItem(k) || '';
+        $(k).addEventListener('input', () => sessionStorage.setItem(k, $(k).value));
+    });
+    const log = m => $('log').textContent = new Date().toLocaleTimeString() + ' ' + m + '\n' + $('log').textContent;
+    let current = null;
+
+    async function send(url, opts) {
+        const r = await fetch(url, opts);
+        if (r.status === 202) {
+            const j = await r.json();
+            $('jobId').value = j.id;
+            log('queued ' + j.id);
+        } else {
+            log('error ' + r.status + ' ' + (await r.text()).slice(0, 200));
+        }
+    }
+    const senderHeaders = extra => Object.assign({ 'X-Api-Key': $('apiKey').value }, extra);
+
+    $('sendMsg').onclick = () => send('/api/print/message', {
+        method: 'POST',
+        headers: senderHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ text: $('msgText').value, align: $('msgAlign').value, bold: $('msgBold').checked, feed: +$('msgFeed').value })
+    });
+    $('sendQr').onclick = () => send('/api/print/qr', {
+        method: 'POST',
+        headers: senderHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ text: $('qrText').value, size: +$('qrSize').value })
+    });
+    $('sendImg').onclick = () => {
+        const f = $('imgFile').files[0];
+        if (!f) return log('choose a file first');
+        send('/api/print/image', { method: 'POST', headers: senderHeaders({ 'Content-Type': f.type || 'application/octet-stream' }), body: f });
+    };
+
+    let timer = null;
+    async function checkJob() {
+        const id = $('jobId').value.trim();
+        if (!id) return;
+        const r = await fetch('/api/print/jobs/' + encodeURIComponent(id), { headers: senderHeaders() });
+        $('jobOut').textContent = r.ok ? JSON.stringify(await r.json(), null, 2) : 'HTTP ' + r.status;
+    }
+    $('checkJob').onclick = () => { checkJob(); clearInterval(timer); timer = setInterval(checkJob, 5000); };
+
+    $('poll').onclick = async () => {
+        $('ackBtns').style.display = $('canvas').style.display = $('textPreview').style.display = 'none';
+        const r = await fetch('/api/printer/next', { headers: { 'X-Device-Key': $('deviceKey').value } });
+        if (r.status === 204) { $('headers').textContent = '204 No Content'; current = null; return; }
+        if (!r.ok) { $('headers').textContent = 'HTTP ' + r.status; return; }
+        const h = n => r.headers.get(n);
+        current = h('X-Job-Id');
+        const hs = ['X-Job-Id', 'X-Job-Type', 'X-Align', 'X-Bold', 'X-Feed', 'X-Width'].filter(n => h(n) !== null).map(n => n + ': ' + h(n));
+        const buf = new Uint8Array(await r.arrayBuffer());
+        $('headers').textContent = hs.join('\n') + '\nBody: ' + buf.length + ' bytes';
+        if (h('X-Job-Type') === 'bitmap') {
+            const w = parseInt(h('X-Width') || '384', 10), bpr = w / 8, hgt = Math.floor(buf.length / bpr);
+            const c = $('canvas'); c.width = w; c.height = hgt;
+            const ctx = c.getContext('2d'), img = ctx.createImageData(w, hgt);
+            for (let y = 0; y < hgt; y++) for (let x = 0; x < w; x++) {
+                const black = (buf[y * bpr + (x >> 3)] >> (7 - (x & 7))) & 1;
+                const i = (y * w + x) * 4;
+                img.data[i] = img.data[i + 1] = img.data[i + 2] = black ? 0 : 255; img.data[i + 3] = 255;
+            }
+            ctx.putImageData(img, 0, 0);
+            c.style.display = '';
+        } else {
+            const p = $('textPreview');
+            p.textContent = new TextDecoder('ibm437' in {} ? 'ibm437' : 'latin1').decode(buf);
+            p.style.textAlign = h('X-Align') || 'left';
+            p.style.fontWeight = h('X-Bold') === '1' ? 'bold' : 'normal';
+            p.style.display = '';
+        }
+        $('ackBtns').style.display = '';
+        $('jobId').value = current;
+    };
+
+    async function ack(status) {
+        if (!current) return;
+        const r = await fetch('/api/printer/jobs/' + encodeURIComponent(current) + '/ack?status=' + status +
+            (status === 'failed' ? '&error=' + encodeURIComponent('test failure') : ''),
+            { method: 'POST', headers: { 'X-Device-Key': $('deviceKey').value } });
+        log('ack ' + status + ' -> ' + r.status);
+        $('ackBtns').style.display = 'none';
+    }
+    $('ackDone').onclick = () => ack('done');
+    $('ackFail').onclick = () => ack('failed');
+})();
+</script>
+}
