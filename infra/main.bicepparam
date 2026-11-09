@@ -14,4 +14,5 @@ param enturClientName = 'hilmarelverhoy-nokiajourneyplanner'
 param linearApiKey = readEnvironmentVariable('LINEAR_API_KEY')
 param linearTeamId = readEnvironmentVariable('LINEAR_TEAM_ID')
 param openAiApiKey = readEnvironmentVariable('OPENAI_API_KEY')
-
+param printerDeviceKey = readEnvironmentVariable('PRINTER_DEVICE_KEY', '')
+param printerApiKey = readEnvironmentVariable('PRINTER_API_KEY', '')

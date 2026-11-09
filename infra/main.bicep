@@ -30,6 +30,14 @@ param linearTeamId string
 @secure()
 param openAiApiKey string
 
+@description('Printer device key (X-Device-Key). Pass via environment; never commit the value.')
+@secure()
+param printerDeviceKey string = ''
+
+@description('Printer sender key (X-Api-Key). Pass via environment; never commit the value.')
+@secure()
+param printerApiKey string = ''
+
 // ---------------------------------------------------------------------------
 // App Service Plan — F1 Free tier (Windows, shared compute)
 // ---------------------------------------------------------------------------
@@ -89,6 +97,14 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'Linear__TeamId'
           value: linearTeamId
+        }
+        {
+          name: 'Printer__DeviceKey'
+          value: printerDeviceKey
+        }
+        {
+          name: 'Printer__ApiKey'
+          value: printerApiKey
         }
         {
           name: 'OpenAi__ApiKey'

@@ -51,6 +51,8 @@ jobs:
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
           LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PRINTER_DEVICE_KEY: ${{ secrets.PRINTER_DEVICE_KEY }}
+          PRINTER_API_KEY: ${{ secrets.PRINTER_API_KEY }}
         run: |
           az group create --name rg-nokiahome --location norwayeast
           az deployment group create \
