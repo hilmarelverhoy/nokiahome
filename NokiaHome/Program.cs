@@ -63,6 +63,11 @@ builder.Services.AddHttpClient("Web", c =>
 });
 builder.Services.AddScoped<NokiaHome.Services.IResearchService, NokiaHome.Services.ResearchService>();
 
+// Printer job queue (ESP32 thermal printer polls /api/printer/next)
+builder.Services.Configure<NokiaHome.Settings.PrinterSettings>(builder.Configuration.GetSection("Printer"));
+builder.Services.AddSingleton<NokiaHome.Services.IPrintJobStore, NokiaHome.Services.BlobPrintJobStore>();
+builder.Services.AddSingleton<NokiaHome.Services.IPrintQueueService, NokiaHome.Services.PrintQueueService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,7 +78,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+app.UseWhen(
+    ctx => !ctx.Request.Path.StartsWithSegments("/api"),
+    b => b.UseHttpsRedirection());
 app.UseRouting();
 
 app.UseAuthorization();

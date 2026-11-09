@@ -96,6 +96,15 @@
           }
         }
       },
+      "QRCoder/1.6.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/QRCoder.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/QRCoder.dll": {}
+        }
+      },
       "SixLabors.ImageSharp/3.1.12": {
         "type": "package",
         "compile": {
@@ -383,6 +392,27 @@
         "microsoft.extensions.ai.abstractions.nuspec"
       ]
     },
+    "QRCoder/1.6.0": {
+      "sha512": "XmPA81eo+oRxBuyVdswsSkTGTE1d3thfF11Z1PdD7oB56A6HU4G4AAOdySmGRMb/cljwlFTMWUtosGEnwpS6GA==",
+      "type": "package",
+      "path": "qrcoder/1.6.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/QRCoder.dll",
+        "lib/net40/QRCoder.dll",
+        "lib/net5.0-windows7.0/QRCoder.dll",
+        "lib/net5.0/QRCoder.dll",
+        "lib/net6.0-windows7.0/QRCoder.dll",
+        "lib/net6.0/QRCoder.dll",
+        "lib/netstandard1.3/QRCoder.dll",
+        "lib/netstandard2.0/QRCoder.dll",
+        "nuget-icon.png",
+        "nuget-readme.md",
+        "qrcoder.1.6.0.nupkg.sha512",
+        "qrcoder.nuspec"
+      ]
+    },
     "SixLabors.ImageSharp/3.1.12": {
       "sha512": "iAg6zifihXEFS/t7fiHhZBGAdCp3FavsF4i2ZIDp0JfeYeDVzvmlbY1CNhhIKimaIzrzSi5M/NBFcWvZT2rB/A==",
       "type": "package",
@@ -628,6 +658,7 @@
     "net10.0": [
       "Anthropic >= 12.22.0",
       "Azure.Storage.Blobs >= 12.27.0",
+      "QRCoder >= 1.6.0",
       "SixLabors.ImageSharp >= 3.1.12",
       "UglyToad.PdfPig >= 1.7.0-custom-5"
     ]
@@ -685,6 +716,10 @@
           "Azure.Storage.Blobs": {
             "target": "Package",
             "version": "[12.27.0, )"
+          },
+          "QRCoder": {
+            "target": "Package",
+            "version": "[1.6.0, )"
           },
           "SixLabors.ImageSharp": {
             "target": "Package",
